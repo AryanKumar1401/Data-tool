@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import CarouselPage from '../components/Carousel';
 
 const PageContainer = styled.div`
   background-color: #000;
@@ -46,16 +47,33 @@ const Footer = styled.footer`
   font-size: 1.2em;
 `;
 
+{/* <div className="home">
+<div className="headerContainer">
+  <h4 className="personal">Your Personal</h4>
+  <CarouselPage />
+  <p className="whatwedo">What we do</p>
+  <p className="whatwedoDescription">
+    DataTool takes your dataset and cleanses and analyzes it to return
+    stunning visualizations
+  </p>
+  <p className="whatwedohook">
+    We do the brunt work, so you can get cracking on the real stuff
+  </p>
+  <button type="button" onClick={handleClick}>
+    Ready to rock?
+  </button>
+</div>
+</div> */}
 const HomePage = () => {
   return (
+
+
+
+
     <PageContainer>
       <SubHeader>
         <div>Your Personal</div>
-        <div>
-          <div>Data Visualizer</div>
-          <div>Data Cleanser</div>
-          <div>Data Analyzer</div>
-        </div>
+        <CarouselPage />
       </SubHeader>
       <Section>
         <h2>What we do</h2>

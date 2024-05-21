@@ -1,0 +1,36 @@
+.CarouselMainPage {
+    color: white;
+    font-size: 50px;
+    font-family: "Inter", sans-serif; /* Adding a fallback font */
+    font-weight: lighter;
+    padding: 0; /* Ensure no padding is added */
+    margin: 0; /* Ensure no margin is added */
+    display: flex;
+    justify-content: center; /* Center the content horizontally */
+    align-items: center; /* Center the content vertically */
+  }
+
+
+  .CarouselMainPage .slide {
+    padding: 0; /* Remove padding from slides */
+    margin: 0; /* Remove margin from slides */
+    display: flex;
+    justify-content: center; /* Center the text horizontally */
+    align-items: center; /* Center the text vertically */
+  }
+  
+  .CarouselMainPage .slide h4 {
+    margin: 0; /* Remove any default margin from the h4 element */
+  }
+
+  
+  .carousel .control-dots {
+    display: none; /* Hide control dots if they take up space */
+  }
+  
+  .carousel .slider-wrapper {
+    margin: 0 auto; /* Center the slider wrapper */
+    width: auto; /* Let the width adjust to the content */
+  }
+  
+  
