@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import CarouselPage from '../components/Carousel';
+import { Link } from "react-router-dom";
+import CarouselPage from "../components/Carousel.js";
 
 const PageContainer = styled.div`
   background-color: #000;
