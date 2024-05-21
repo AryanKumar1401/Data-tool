@@ -1,8 +1,27 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Link } from "react-router-dom";
-import CarouselPage from "../components/Carousel.js";
+import { useNavigate } from 'react-router-dom';
+import CarouselPage from '../components/Carousel.js';
 
+// Styled button component
+const MainButtonRock = styled.button`
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #121619;
+  height: 50px;
+  width: 180px;
+  font-size: 20px;
+  margin-top: 20px;
+
+  /* Hover effect */
+  &:hover {
+    background-color: #0a1013;
+  }
+`;
+
+// Styled components for the page layout
 const PageContainer = styled.div`
   background-color: #000;
   color: #fff;
@@ -14,7 +33,6 @@ const PageContainer = styled.div`
   text-align: center;
   padding: 20px;
 `;
-
 
 const SubHeader = styled.div`
   display: flex;
@@ -43,34 +61,15 @@ const Section = styled.section`
   }
 `;
 
-const Footer = styled.footer`
-  margin-top: 50px;
-  font-size: 1.2em;
-`;
-
-{/* <div className="home">
-<div className="headerContainer">
-  <h4 className="personal">Your Personal</h4>
-  <CarouselPage />
-  <p className="whatwedo">What we do</p>
-  <p className="whatwedoDescription">
-    DataTool takes your dataset and cleanses and analyzes it to return
-    stunning visualizations
-  </p>
-  <p className="whatwedohook">
-    We do the brunt work, so you can get cracking on the real stuff
-  </p>
-  <button type="button" onClick={handleClick}>
-    Ready to rock?
-  </button>
-</div>
-</div> */}
 const HomePage = () => {
+  const navigate = useNavigate();
+
+  // Function to handle button click and navigate to another route
+  const navigateToExplore = () => {
+    navigate('/explore');
+  };
+
   return (
-
-
-
-
     <PageContainer>
       <SubHeader>
         <div>Your Personal</div>
@@ -78,14 +77,13 @@ const HomePage = () => {
       </SubHeader>
       <Section>
         <h2>What we do</h2>
+        <p>DataTool takes your dataset and cleanses and analyzes it to return stunning visualizations.</p>
         <p>
-          DataTool takes your dataset and cleanses and analyzes it to return stunning visualizations.
-        </p>
-        <p> 
           <strong>We do the brunt work, so you can get cracking on the real stuff.</strong>
         </p>
+      
+        <MainButtonRock onClick={navigateToExplore}>Ready to Rock?</MainButtonRock>
       </Section>
-      <Footer>Ready to Rock?</Footer>
     </PageContainer>
   );
 };
