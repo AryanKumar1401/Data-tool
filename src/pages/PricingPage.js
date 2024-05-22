@@ -19,10 +19,10 @@ const PricingPage = () => {
       };
 
   return (
-    <div className="h-screen w-screen bg-black flex flex-col items-center justify-center text-blue">       <div className="text-center mb-12">
+    <div className="h-screen w-screen bg-black flex flex-col items-center justify-center">       <div className="text-center mb-12">
         <h1 className="text-4xl font-extrabold text-white">Pricing plans for teams of all sizes</h1>
         <p className="text-lg text-white mt-4">
-          Choose an affordable plan that’s packed with the best features for engaging your audience, creating customer loyalty, and driving sales.
+          Choose an affordable plan that's packed with the best features for engaging your audience, creating customer loyalty, and driving sales.
         </p>
         <div className="mt-6 inline-flex rounded-md shadow-sm">
           <button
