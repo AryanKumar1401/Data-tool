@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
 
 const PageContainer = styled.div`
   display: flex;
@@ -33,46 +34,125 @@ const Button = styled.button`
   }
 `;
 
-const UploadPage = () => {
-  const [file, setFile] = useState(null);
+/*ARYAN DOWN*/
 
-  const handleFileChange = (event) => {
-    setFile(event.target.files[0]);
-  };
+// const UploadPage = () => {
+//   const [file, setFile] = useState(null);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const formData = new FormData();
-    formData.append('file', file);
+//   const handleFileChange = (event) => {
+//     setFile(event.target.files[0]);
+//   };
 
-    try {
-      const response = await fetch('/upload', {
-        method: 'POST',
-        body: formData,
-      });
+//   const handleSubmit = async (event) => {
+//     event.preventDefault();
+//     const formData = new FormData();
+//     formData.append('file', file);
 
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'processed-file';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-    } catch (error) {
-      console.error('Error uploading file:', error);
-    }
-  };
+//     try {
+//       const response = await fetch('/upload', {
+//         method: 'POST',
+//         body: formData,
+//       });
 
+//       const blob = await response.blob();
+//       const url = window.URL.createObjectURL(blob);
+//       const a = document.createElement('a');
+//       a.href = url;
+//       a.download = 'processed-file';
+//       document.body.appendChild(a);
+//       a.click();
+//       a.remove();
+//     } catch (error) {
+//       console.error('Error uploading file:', error);
+//     }
+//   };
+
+/*Aryan UP*/
+
+  
+
+  const UploadPage = () => {
+    const [file, setFile] = useState(null);
+  const [progress, setProgress] = useState({started: false, percentageCompleted: 0});
+  const [msg, setMsg] = useState(null);
+
+  function handler () {
+
+    if(!file) {
+      setMsg('No file selected');
+      return;
+    } 
+    const dataForm = new FormData();
+    dataForm.append('file', file);
+
+    setMsg('Upload In Progress');
+
+    setProgress(prevState => {
+      return {...prevState, started: true}
+    })
+
+    axios.post('http://httpbin.org/post', dataForm, {
+      onUploadProgress: (ProgressEvent) => {setProgress(prevState => {
+        return {...prevState, percentageCompleted: ProgressEvent.progress*100}
+      })
+
+      },
+      headers: {
+        'Custom-Header': 'Value',
+      }
+    })
+    .then(response => {
+      setMsg("Upload Successfully Completed");
+      console.log(response.data);
+
+    })
+      
+    .catch(err => {
+      setMsg("Upload Failed");
+      console.log(err);
+
+
+    });
+    
+
+  }
   return (
+
+    
+    /*Starting my code*/
+
     <PageContainer>
-      <h1>Upload File</h1>
-      <Form onSubmit={handleSubmit}>
-        <Input type="file" onChange={handleFileChange} />
-        <Button type="submit">Upload</Button>
-      </Form>
+       <h1>Upload file</h1>
+
+<Input onChange={(e) => {setFile(e.target.files[0])}} type='file'/>
+
+<Button onClick={handler}>Upload here</Button>
+
+{progress.started && <progress max = "100" value ={progress.percentageCompleted}></progress>}
+{msg && <span>{msg}</span>}
+
     </PageContainer>
+
+   
+     
+
+    
+
+
+
+
+
+
+
+    /*The BELOW CODE IS ARYAN'S*/
+    // <PageContainer>
+    //   <h1>Upload File</h1>
+    //   <Form onSubmit={handleSubmit}>
+    //     <Input type="file" onChange={handleFileChange} />
+    //     <Button type="submit">Upload</Button>
+    //   </Form>
+    // </PageContainer>
   );
-};
+  };
 
 export default UploadPage;
