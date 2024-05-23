@@ -54,6 +54,7 @@ function App() {
               
               <div className="bg-white p-8 rounded-lg shadow-lg">
                 <SignIn setUser={setUser} closeModal={closeModal} />
+
               </div>
            
             </div>
