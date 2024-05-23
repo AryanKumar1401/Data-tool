@@ -6,7 +6,7 @@ import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
 import UploadPage from './pages/UploadPage';
 import PricingPage from './pages/PricingPage';
-import SignIn from './components/signIn';
+import SignIn from './components/SignIn';
 
 function App() {
   const [showAuth, setShowAuth] = useState(false);
@@ -34,11 +34,12 @@ function App() {
             <span className="text-white font-bold text-lg">Hello, {user.displayName.split(' ')[0]}!</span>
           ) : (
             <button
-              onClick={() => setShowAuth(!showAuth)}
+              onClick={() => setShowAuth(true)}
               className="bg-white border-2 border-gray-800 text-gray-800 rounded-md px-4 py-2 hover:bg-gray-100"
             >
               Sign Up / Log In
             </button>
+      
           )}
         </header>
         <main className="flex-1 mt-20 p-4">
@@ -48,12 +49,13 @@ function App() {
             <Route path="/explore" element={<UploadPage />} />
             <Route path="/pricing" element={<PricingPage />} />
           </Routes>
-          {showAuth && !user && (
+          {showAuth && (
             <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
+              
               <div className="bg-white p-8 rounded-lg shadow-lg">
-                <button onClick={closeModal} className="absolute top-2 right-2 text-gray-600">&times;</button>
                 <SignIn setUser={setUser} closeModal={closeModal} />
               </div>
+           
             </div>
           )}
         </main>
