@@ -1,5 +1,8 @@
 //IMPORTS START
 
+
+//WE NEED TO ORIGINALIZE CODE SNIPPETS
+
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import OpenAI from 'openai';
