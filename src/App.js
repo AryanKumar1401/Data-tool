@@ -1,7 +1,6 @@
 // src/App.js
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import ReactHelmet from "react-helmet";
 import GlobalStyles from './GlobalStyles';
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
@@ -9,20 +8,14 @@ import UploadPage from './pages/UploadPage';
 import PricingPage from './pages/PricingPage';
 import SignIn from './components/SignIn';
 
-
 function App() {
   const [showAuth, setShowAuth] = useState(false);
   const [user, setUser] = useState(null);
 
   const closeModal = () => setShowAuth(false);
 
-
   return (
-    
     <Router>
-        <ReactHelmet>
-  <title>Data Tool</title>
-</ReactHelmet>
       <GlobalStyles />
       <div className="flex flex-col min-h-screen">
         <header className="bg-black fixed top-2 left-2 right-2 p-4 rounded-lg shadow-lg flex justify-between items-center z-50">

@@ -1,24 +1,17 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
-import OpenAI from 'openai';
-
-// Initialize OpenAI API
-const openai = new OpenAI({
-  apiKey: process.env.REACT_APP_OPENAI_API_KEY,
-  dangerouslyAllowBrowser: true
-});
 
 const PageContainer = styled.div`
   display: flex;
-  flex-direction: row; /* Changed to row to place chat and upload side by side */
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
   height: 100vh;
   background-color: #f0f0f0;
 `;
 
-const FormContainer = styled.div`
+const Form = styled.form`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -41,138 +34,125 @@ const Button = styled.button`
   }
 `;
 
-const ChatContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 30%;
-  margin-left: 20px;
-  background-color: #fff;
-  padding: 20px;
-  border: 1px solid #ccc;
-  height: 80vh;
-  overflow-y: auto;
-`;
+/*ARYAN DOWN*/
 
-const ChatBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 100%;
-  margin-top: 20px;
-`;
+// const UploadPage = () => {
+//   const [file, setFile] = useState(null);
 
-const MessageInput = styled.textarea`
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-`;
+//   const handleFileChange = (event) => {
+//     setFile(event.target.files[0]);
+//   };
 
-const Message = styled.div`
-  background-color: ${(props) => (props.isUser ? '#007bff' : '#eee')};
-  color: ${(props) => (props.isUser ? '#fff' : '#000')};
-  align-self: ${(props) => (props.isUser ? 'flex-end' : 'flex-start')};
-  margin: 5px 0;
-  padding: 10px;
-  border-radius: 10px;
-`;
+//   const handleSubmit = async (event) => {
+//     event.preventDefault();
+//     const formData = new FormData();
+//     formData.append('file', file);
 
-const UploadPage = () => {
-  const [file, setFile] = useState(null);
-  const [progress, setProgress] = useState({ started: false, percentageCompleted: 0 });
+//     try {
+//       const response = await fetch('/upload', {
+//         method: 'POST',
+//         body: formData,
+//       });
+
+//       const blob = await response.blob();
+//       const url = window.URL.createObjectURL(blob);
+//       const a = document.createElement('a');
+//       a.href = url;
+//       a.download = 'processed-file';
+//       document.body.appendChild(a);
+//       a.click();
+//       a.remove();
+//     } catch (error) {
+//       console.error('Error uploading file:', error);
+//     }
+//   };
+
+/*Aryan UP*/
+
+  
+
+  const UploadPage = () => {
+    const [file, setFile] = useState(null);
+  const [progress, setProgress] = useState({started: false, percentageCompleted: 0});
   const [msg, setMsg] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
 
-  const handleFileChange = (event) => {
-    setFile(event.target.files[0]);
-  };
+  function handler () {
 
-  const handleUpload = () => {
-    if (!file) {
+    if(!file) {
       setMsg('No file selected');
       return;
-    }
-    const formData = new FormData();
-    formData.append('file', file);
+    } 
+    const dataForm = new FormData();
+    dataForm.append('file', file);
 
     setMsg('Upload In Progress');
-    setProgress((prevState) => ({ ...prevState, started: true }));
 
-    axios
-      .post('http://httpbin.org/post', formData, {
-        onUploadProgress: (ProgressEvent) => {
-          setProgress((prevState) => ({
-            ...prevState,
-            percentageCompleted: (ProgressEvent.loaded / ProgressEvent.total) * 100,
-          }));
-        },
-        headers: {
-          'Custom-Header': 'Value',
-        },
+    setProgress(prevState => {
+      return {...prevState, started: true}
+    })
+
+    axios.post('http://httpbin.org/post', dataForm, {
+      onUploadProgress: (ProgressEvent) => {setProgress(prevState => {
+        return {...prevState, percentageCompleted: ProgressEvent.progress*100}
       })
-      .then((response) => {
-        setMsg('Upload Successfully Completed');
-        console.log(response.data);
-      })
-      .catch((err) => {
-        setMsg('Upload Failed');
-        console.log(err);
-      });
-  };
 
-  const handleChatSubmit = async () => {
-    if (!input.trim()) return;
+      },
+      headers: {
+        'Custom-Header': 'Value',
+      }
+    })
+    .then(response => {
+      setMsg("Upload Successfully Completed");
+      console.log(response.data);
 
-    const newMessage = { text: input, isUser: true };
-    setMessages([...messages, newMessage]);
-    setInput('');
+    })
+      
+    .catch(err => {
+      setMsg("Upload Failed");
+      console.log(err);
 
-    try {
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "user",
-            content: input,
-          },
-        ],
-      });
 
-      const botMessage = { text: response.choices[0].message.content.trim(), isUser: false };
-      setMessages([...messages, botMessage]);
-    } catch (error) {
-      console.error('Error with OpenAI API:', error);
-    }
-  };
+    });
+    
 
+  }
   return (
-    <PageContainer>
-      <FormContainer>
-        <h1>Upload file</h1>
-        <Input onChange={handleFileChange} type="file" />
-        <Button onClick={handleUpload}>Upload here</Button>
-        {progress.started && <progress max="100" value={progress.percentageCompleted}></progress>}
-        {msg && <span>{msg}</span>}
-      </FormContainer>
 
-      <ChatContainer>
-        <ChatBox>
-          {messages.map((msg, index) => (
-            <Message key={index} isUser={msg.isUser}>
-              {msg.text}
-            </Message>
-          ))}
-        </ChatBox>
-        <MessageInput
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          rows="3"
-        />
-        <Button onClick={handleChatSubmit}>Send</Button>
-      </ChatContainer>
+    
+    /*Starting my code*/
+
+    <PageContainer>
+       <h1>Upload file</h1>
+
+<Input onChange={(e) => {setFile(e.target.files[0])}} type='file'/>
+
+<Button onClick={handler}>Upload here</Button>
+
+{progress.started && <progress max = "100" value ={progress.percentageCompleted}></progress>}
+{msg && <span>{msg}</span>}
+
     </PageContainer>
+
+   
+     
+
+    
+
+
+
+
+
+
+
+    /*The BELOW CODE IS ARYAN'S*/
+    // <PageContainer>
+    //   <h1>Upload File</h1>
+    //   <Form onSubmit={handleSubmit}>
+    //     <Input type="file" onChange={handleFileChange} />
+    //     <Button type="submit">Upload</Button>
+    //   </Form>
+    // </PageContainer>
   );
-};
+  };
 
 export default UploadPage;
