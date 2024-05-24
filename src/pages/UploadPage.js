@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import axios from 'axios';
 import OpenAI from 'openai';
 
+
 // Initialize OpenAI API
 const openai = new OpenAI({
   apiKey: process.env.REACT_APP_OPENAI_API_KEY,
@@ -83,6 +84,9 @@ const UploadPage = () => {
   const [msg, setMsg] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+  const [fileStatus, setFileStatus] = useState(false);
+
+  const getPrompt = (fileStatus) => {return fileStatus ? "tell the user that the dataset has been processed and they will be directed to a new page" : "greet the user, respond to any of their questions, and after that ask them to upload a dataset"};
 
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
@@ -113,6 +117,7 @@ const UploadPage = () => {
       })
       .then((response) => {
         setMsg('Upload Successfully Completed');
+        setFileStatus(true);
         console.log(response.data);
       })
       .catch((err) => {
@@ -123,6 +128,7 @@ const UploadPage = () => {
 
   const handleChatSubmit = async () => {
     if (!input.trim()) return;
+    const prompt = getPrompt(fileStatus)
 
     const newMessage = { text: input, isUser: true };
     setMessages((prevMessages) => [...prevMessages, newMessage]);
@@ -130,11 +136,12 @@ const UploadPage = () => {
 
     try {
       const response = await openai.chat.completions.create({
+        
         model: "gpt-4",
         messages: [
           {
             role: "user",
-            content: input,
+            content: prompt,
           },
         ],
       });
