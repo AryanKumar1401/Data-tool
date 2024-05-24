@@ -8,6 +8,8 @@ import UploadPage from './pages/UploadPage';
 import PricingPage from './pages/PricingPage';
 import SignIn from './components/SignIn';
 
+
+//change
 function App() {
   const [showAuth, setShowAuth] = useState(false);
   const [user, setUser] = useState(null);
