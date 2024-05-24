@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import OpenAI from 'openai';
-
+import storage from '../firebase.js';
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 // Initialize OpenAI API
 const openai = new OpenAI({
@@ -23,17 +24,26 @@ const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  
+  border-radius: 40px;
+  background: linear-gradient(135deg, #00fafa, #00c3c3);
+  
 `;
 
 const Input = styled.input`
   margin: 10px 0;
   padding: 10px;
+  display: none;
+ 
+
 `;
 
 const Button = styled.button`
   padding: 10px 20px;
   background-color: #333;
   color: white;
+  font-weight: bold;
+  font-family: 'Inter', sans-serif;
   border: none;
   cursor: pointer;
 
@@ -85,8 +95,11 @@ const UploadPage = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [fileStatus, setFileStatus] = useState(false);
+  const [percent, setPercent] = useState(0);
 
-  const getPrompt = (fileStatus) => {return fileStatus ? "tell the user that the dataset has been processed and they will be directed to a new page" : "greet the user, respond to any of their questions, and after that ask them to upload a dataset"};
+  const getPrompt = (fileStatus) => {
+    return fileStatus ? "tell the user that the dataset has been processed and they will be directed to a new page" : "greet the user, respond to any of their questions, and after that ask them to upload a dataset";
+  };
 
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
@@ -94,41 +107,45 @@ const UploadPage = () => {
 
   const handleUpload = () => {
     if (!file) {
-      setMsg('No file selected');
+      alert("Please choose a file first!");
       return;
     }
-    const formData = new FormData();
-    formData.append('file', file);
 
-    setMsg('Upload In Progress');
-    setProgress((prevState) => ({ ...prevState, started: true }));
+    const storageRef = ref(storage, `/files/${file.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
 
-    axios
-      .post('http://httpbin.org/post', formData, {
-        onUploadProgress: (ProgressEvent) => {
-          setProgress((prevState) => ({
-            ...prevState,
-            percentageCompleted: (ProgressEvent.loaded / ProgressEvent.total) * 100,
-          }));
-        },
-        headers: {
-          'Custom-Header': 'Value',
-        },
-      })
-      .then((response) => {
-        setMsg('Upload Successfully Completed');
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const percent = Math.round(
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+        );
+        setPercent(percent);
+        setProgress({ started: true, percentageCompleted: percent });
         setFileStatus(true);
-        console.log(response.data);
-      })
-      .catch((err) => {
-        setMsg('Upload Failed');
-        console.log(err);
-      });
+      },
+      (error) => {
+        console.error("Error uploading file:", error);
+        setMsg("Error uploading file");
+      },
+      () => {
+        // Upload completed
+        getDownloadURL(uploadTask.snapshot.ref)
+          .then((url) => {
+            console.log("File uploaded successfully. Download URL:", url);
+            setMsg("File uploaded successfully");
+          })
+          .catch((error) => {
+            console.error("Error getting download URL:", error);
+            setMsg("Error getting download URL");
+          });
+      }
+    );
   };
 
   const handleChatSubmit = async () => {
     if (!input.trim()) return;
-    const prompt = getPrompt(fileStatus)
+    const prompt = getPrompt(fileStatus);
 
     const newMessage = { text: input, isUser: true };
     setMessages((prevMessages) => [...prevMessages, newMessage]);
@@ -136,7 +153,6 @@ const UploadPage = () => {
 
     try {
       const response = await openai.chat.completions.create({
-        
         model: "gpt-4",
         messages: [
           {
@@ -156,8 +172,12 @@ const UploadPage = () => {
   return (
     <PageContainer>
       <FormContainer>
-        <h1>Upload file</h1>
-        <Input onChange={handleFileChange} type="file" />
+        <h1>Drag, drop, or upload file</h1>
+
+        <label for="file-upload" class="custom-file-upload">
+        Custom Upload
+    </label>
+        <Input id="file-upload" onChange={handleFileChange} type="file" />
         <Button onClick={handleUpload}>Upload here</Button>
         {progress.started && <progress max="100" value={progress.percentageCompleted}></progress>}
         {msg && <span>{msg}</span>}
