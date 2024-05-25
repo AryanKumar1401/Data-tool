@@ -5,16 +5,11 @@
 
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { getFirestore, collection, addDoc } from 'firebase/firestore';
-import { app } from '../firebase';
+import {ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import OpenAI from 'openai';
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { storage } from '../firebase'; // Import your initialized Firebase storage instance
 
 //IMPORTS END
-const db = getFirestore(app);
-const storage = getStorage(app); START
 const openai = new OpenAI({
   apiKey: process.env.REACT_APP_OPENAI_API_KEY,
   dangerouslyAllowBrowser: true
