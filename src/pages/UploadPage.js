@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { getFirestore, collection, addDoc } from 'firebase/firestore';
+import { app } from '../firebase';
 import OpenAI from 'openai';
 
-
-// Initialize OpenAI API
+const db = getFirestore(app);
+const storage = getStorage(app);
 const openai = new OpenAI({
   apiKey: process.env.REACT_APP_OPENAI_API_KEY,
   dangerouslyAllowBrowser: true
 });
-
 const PageContainer = styled.div`
   display: flex;
   flex-direction: row; 
@@ -97,33 +98,36 @@ const UploadPage = () => {
       setMsg('No file selected');
       return;
     }
-    const formData = new FormData();
-    formData.append('file', file);
+    
+    const storageRef = ref(storage, `files/${file.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
 
     setMsg('Upload In Progress');
     setProgress((prevState) => ({ ...prevState, started: true }));
 
-    axios
-      .post('http://httpbin.org/post', formData, {
-        onUploadProgress: (ProgressEvent) => {
-          setProgress((prevState) => ({
-            ...prevState,
-            percentageCompleted: (ProgressEvent.loaded / ProgressEvent.total) * 100,
-          }));
-        },
-        headers: {
-          'Custom-Header': 'Value',
-        },
-      })
-      .then((response) => {
+    uploadTask.on('state_changed', 
+      (snapshot) => {
+        const percentageCompleted = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setProgress((prevState) => ({
+          ...prevState,
+          percentageCompleted,
+        }));
+      }, 
+      (error) => {
+        setMsg('Upload Failed');
+        console.log(error);
+      }, 
+      async () => {
+        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+        await addDoc(collection(db, "files"), {
+          name: file.name,
+          url: downloadURL,
+          timestamp: new Date()
+        });
         setMsg('Upload Successfully Completed');
         setFileStatus(true);
-        console.log(response.data);
-      })
-      .catch((err) => {
-        setMsg('Upload Failed');
-        console.log(err);
-      });
+      }
+    );
   };
 
   const handleChatSubmit = async () => {
@@ -136,7 +140,6 @@ const UploadPage = () => {
 
     try {
       const response = await openai.chat.completions.create({
-        
         model: "gpt-4",
         messages: [
           {
