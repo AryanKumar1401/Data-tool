@@ -1,16 +1,30 @@
+//IMPORTS START
+
+
+//WE NEED TO ORIGINALIZE CODE SNIPPETS
+
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import { app } from '../firebase';
 import OpenAI from 'openai';
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { storage } from '../firebase'; // Import your initialized Firebase storage instance
 
+//IMPORTS END
 const db = getFirestore(app);
-const storage = getStorage(app);
+const storage = getStorage(app); START
 const openai = new OpenAI({
   apiKey: process.env.REACT_APP_OPENAI_API_KEY,
   dangerouslyAllowBrowser: true
 });
+
+// Initialize OpenAI API END
+
+
+//CSS START
+
 const PageContainer = styled.div`
   display: flex;
   flex-direction: row; 
@@ -24,17 +38,22 @@ const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  border-radius: 40px;
+  background: linear-gradient(135deg, #00fafa, #00c3c3);
 `;
 
 const Input = styled.input`
   margin: 10px 0;
   padding: 10px;
+  display: none;
 `;
 
 const Button = styled.button`
   padding: 10px 20px;
   background-color: #333;
   color: white;
+  font-weight: bold;
+  font-family: 'Inter', sans-serif;
   border: none;
   cursor: pointer;
 
@@ -79,60 +98,99 @@ const Message = styled.div`
   border-radius: 10px;
 `;
 
+
+//CSS STYLE ENDS
+
+
+//PAGE FUNCTION STARTS
+
 const UploadPage = () => {
+
+  //CONST DEFINITION START
   const [file, setFile] = useState(null);
   const [progress, setProgress] = useState({ started: false, percentageCompleted: 0 });
   const [msg, setMsg] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [fileStatus, setFileStatus] = useState(false);
+  const [percent, setPercent] = useState(0);
 
-  const getPrompt = (fileStatus) => {return fileStatus ? "tell the user that the dataset has been processed and they will be directed to a new page" : "greet the user, respond to any of their questions, and after that ask them to upload a dataset"};
 
+  //GET PROMPT FUNCTION (NOT ESSENTIAL - CAN BE CHANGED)
+  const getPrompt = (fileStatus) => {
+    return fileStatus ? "tell the user that the dataset has been processed and they will be directed to a new page" : "greet the user, respond to any of their questions, and after that ask them to upload a dataset";
+  };
+  //GET PROMPT FUNCTION (NOT ESSENTIAL - CAN BE CHANGED) END
+
+
+  //FILE CHANGE HANDLER START
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
   };
 
+   //FILE CHANGE HANDLER END
+
+//FILE UPLOAD HANDLER START
+
   const handleUpload = () => {
     if (!file) {
-      setMsg('No file selected');
+      alert("Please choose a file first!");
       return;
     }
-    
-    const storageRef = ref(storage, `files/${file.name}`);
+
+   //FILE UPLOAD HANDLER END
+
+
+   //FUNCTIONS FOR HANDLING UPLOADS
+    const storageRef = ref(storage, `/files/${file.name}`);
     const uploadTask = uploadBytesResumable(storageRef, file);
 
-    setMsg('Upload In Progress');
-    setProgress((prevState) => ({ ...prevState, started: true }));
 
-    uploadTask.on('state_changed', 
+
+    uploadTask.on(
+      "state_changed",
       (snapshot) => {
-        const percentageCompleted = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        setProgress((prevState) => ({
-          ...prevState,
-          percentageCompleted,
-        }));
-      }, 
-      (error) => {
-        setMsg('Upload Failed');
-        console.log(error);
-      }, 
-      async () => {
-        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-        await addDoc(collection(db, "files"), {
-          name: file.name,
-          url: downloadURL,
-          timestamp: new Date()
-        });
-        setMsg('Upload Successfully Completed');
+        const percent = Math.round(
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+        );
+        setPercent(percent);
+        setProgress({ started: true, percentageCompleted: percent });
         setFileStatus(true);
+      },
+      (error) => {
+        console.error("Error uploading file:", error);
+        setMsg("Error uploading file");
+      },
+      async () => {
+        try {
+          // Upload completed, get download URL
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          console.log("File uploaded successfully. Download URL:", downloadURL);
+
+          // Pass the download URL to OpenAI API for processing
+          const response = await openai.chat.completions.create({
+            model: "gpt-4",
+            messages: [
+              {
+                role: "user",
+                content: downloadURL, // Pass the download URL as input to the API
+              },
+            ],
+          });
+
+          // Process OpenAI response...
+        } catch (error) {
+          console.error('Error with OpenAI API:', error);
+        }
       }
     );
   };
 
+
+//FUNCTION TO HANDLE AFTER CLICKING SUBMIT
   const handleChatSubmit = async () => {
     if (!input.trim()) return;
-    const prompt = getPrompt(fileStatus)
+    const prompt = getPrompt(fileStatus);
 
     const newMessage = { text: input, isUser: true };
     setMessages((prevMessages) => [...prevMessages, newMessage]);
@@ -156,11 +214,17 @@ const UploadPage = () => {
     }
   };
 
+
+  //FRONTEND
+
   return (
     <PageContainer>
       <FormContainer>
-        <h1>Upload file</h1>
-        <Input onChange={handleFileChange} type="file" />
+        <h1>Drag, drop, or upload file</h1>
+        <label htmlFor="file-upload" className="custom-file-upload">
+          Custom Upload
+        </label>
+        <Input id="file-upload" onChange={handleFileChange} type="file" />
         <Button onClick={handleUpload}>Upload here</Button>
         {progress.started && <progress max="100" value={progress.percentageCompleted}></progress>}
         {msg && <span>{msg}</span>}
