@@ -7,6 +7,8 @@ import AboutPage from './pages/AboutPage';
 import UploadPage from './pages/UploadPage';
 import PricingPage from './pages/PricingPage';
 import SignIn from './components/SignIn';
+import { Helmet} from 'react-helmet';
+
 
 
 //change
@@ -17,7 +19,11 @@ function App() {
   const closeModal = () => setShowAuth(false);
 
   return (
+
     <Router>
+      <Helmet>
+        <title>Data Tool</title>
+      </Helmet>
       <GlobalStyles />
       <div className="flex flex-col min-h-screen">
         <header className="bg-black fixed top-2 left-2 right-2 p-4 rounded-lg shadow-lg flex justify-between items-center z-50">
