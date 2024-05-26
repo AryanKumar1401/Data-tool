@@ -18,7 +18,8 @@ export const getOpenAIResponse = async (input, fileContent) => {
           role: "user",
           content: `Using the data from the uploaded file, answer the following question: ${input}\n\nFile Content:\n${fileContent}`
         }
-      ]
+      ],
+
     });
 
     return response.choices[0].message.content.trim();
