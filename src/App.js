@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import GlobalStyles from './GlobalStyles';
@@ -7,19 +6,28 @@ import AboutPage from './pages/AboutPage';
 import UploadPage from './pages/UploadPage';
 import PricingPage from './pages/PricingPage';
 import SignIn from './components/SignIn';
-import { Helmet} from 'react-helmet';
+import { signOut } from 'firebase/auth';
+import { auth } from './firebase';
+import { Helmet } from 'react-helmet';
 
-
-
-//change
 function App() {
   const [showAuth, setShowAuth] = useState(false);
   const [user, setUser] = useState(null);
 
   const closeModal = () => setShowAuth(false);
+  
+  const handleLogout = () => {
+    signOut(auth)
+      .then(() => {
+        setUser(null);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
 
   return (
-
     <Router>
       <Helmet>
         <title>Data Tool</title>
@@ -39,7 +47,15 @@ function App() {
             <Link to="/contact" className="text-white font-bold text-lg hover:bg-white hover:rounded-md hover:text-black hover:shadow px-3 py-2">Contact</Link>
           </nav>
           {user ? (
-            <span className="text-white font-bold text-lg">Hello, {user.displayName.split(' ')[0]}!</span>
+          
+            <span className="text-white font-bold text-lg">Logged in
+                      <button
+            onClick={handleLogout}
+            className="bg-red-600 text-white rounded-md px-4 py-2 ml-4 hover:bg-red-700"
+          >
+            Logout
+          </button></span>
+            
           ) : (
             <button
               onClick={() => setShowAuth(true)}
@@ -47,7 +63,6 @@ function App() {
             >
               Sign Up / Log In
             </button>
-      
           )}
         </header>
         <main className="flex-1 mt-20 p-4">
@@ -59,12 +74,9 @@ function App() {
           </Routes>
           {showAuth && (
             <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
-              
               <div className="bg-white p-8 rounded-lg shadow-lg">
                 <SignIn setUser={setUser} closeModal={closeModal} />
-
               </div>
-           
             </div>
           )}
         </main>
