@@ -23,6 +23,7 @@ ChartJS.register(
 const ChartComponent = ({ chartData }) => {
   return (
     <div>
+      
       <Bar data={chartData} />
     </div>
   );
