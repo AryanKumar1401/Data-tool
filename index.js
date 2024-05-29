@@ -15,13 +15,13 @@ const storage = multer.diskStorage({
 });
 
 // Initialize upload variable
-const upload = multer({ storage }).single('file');
+const upload = multer({ storage: storage });
 
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, 'build')));
 
 // File upload route
-app.post('/upload', (req, res) => {
+app.post('/upload', upload.single('file'), async (req, res) => {
 
 //   upload(req, res, (err) => {
 //     if (err) {
@@ -50,20 +50,22 @@ app.post('/upload', (req, res) => {
 //       }
 //     }
 //   });
-        const filePath = req.file;
+        const filePath = req.file.path;
+        console.log(filePath);
         const openai = new OpenAI({
-          apiKey: process.env.REACT_APP_OPENAI_API_KEY,
+        apiKey: process.env.REACT_APP_OPENAI_API_KEY,
         });
-    file = openai.files.create({
-        file: fs.createReadStream(filePath),
-        purpose: 'assistants',
-    })
-    res.json({
-                    message: 'File uploaded successfully!',
-                    fileId: file.id,
-                  });
-});
-
+        const file = await openai.files.create({
+            file: fs.createReadStream(filePath),
+            purpose: 'assistants',
+          });
+      
+          res.json({
+            message: 'File uploaded successfully!',
+            fileId: file.id,
+          });
+        });
+        
 app.post('/api/create-assistant', async (req, res) => {
   const { fileId } = req.body;
   try {
