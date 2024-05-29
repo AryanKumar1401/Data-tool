@@ -42,7 +42,7 @@ function App() {
           <nav className="flex space-x-4">
             <Link to="/" className="text-white font-bold text-lg hover:bg-white hover:rounded-md hover:text-black hover:shadow px-3 py-2">Main</Link>
             <Link to="/about" className="text-white font-bold text-lg hover:bg-white hover:rounded-md hover:text-black hover:shadow px-3 py-2">About</Link>
-            <Link to="/explore" className="text-white font-bold text-lg hover:bg-white hover:rounded-md hover:text-black hover:shadow px-3 py-2">Explore</Link>
+            <Link to="/upload" className="text-white font-bold text-lg hover:bg-white hover:rounded-md hover:text-black hover:shadow px-3 py-2">Explore</Link>
             <Link to="/pricing" className="text-white font-bold text-lg hover:bg-white hover:rounded-md hover:text-black hover:shadow px-3 py-2">Pricing</Link>
             <Link to="/contact" className="text-white font-bold text-lg hover:bg-white hover:rounded-md hover:text-black hover:shadow px-3 py-2">Contact</Link>
           </nav>
@@ -69,7 +69,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/about" element={<AboutPage />} />
-            <Route path="/explore" element={<UploadPage />} />
+            <Route path="/upload" element={<UploadPage />} />
             <Route path="/pricing" element={<PricingPage />} />
           </Routes>
           {showAuth && (
