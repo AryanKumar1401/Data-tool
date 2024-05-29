@@ -5,6 +5,7 @@ const OpenAI = require('openai');
 const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3000;
+const bodyParser = require('body-parser')
 
 // Set up storage engine for Multer
 const storage = multer.diskStorage({
@@ -19,6 +20,8 @@ const upload = multer({ storage: storage });
 
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, 'build')));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -57,7 +60,6 @@ app.post('/upload', upload.single('file'), async (req, res) => {
 //     }
 //   });
         const filePath = req.file.path;
-        console.log(filePath);
         const openai = new OpenAI({
         apiKey: process.env.REACT_APP_OPENAI_API_KEY,
         });
@@ -106,7 +108,7 @@ app.post('/api/create-thread', async (req, res) => {
     });
 
     const thread = await openai.beta.threads.create({
-      assistant_id: assistantId,
+      //assistant_id: assistantId,
       messages: [
         {
           role: "user",
