@@ -51,7 +51,9 @@ const UploadPage = () => {
       const fileId = response.data.fileId;
       const assistant = await axios.post('/api/create-assistant', { fileId });
       const thread = await axios.post('/api/create-thread', { fileId, assistantId: assistant.data.id });
-      console.log(`Assistant and thread created successfully! Assistant ID: ${assistant.data.id}, Thread ID: ${thread.data.id}`);
+      console.log("testing");
+      console.log(`Assistant and thread created successfully!! Assistant ID: ${assistant.data.id}, Thread ID: ${thread.data.id}`);
+      console.log("hello");
     } catch (error) {
       console.error('Error uploading file:', error);
       setMsg('Failed to upload file.');
