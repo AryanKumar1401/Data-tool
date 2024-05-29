@@ -20,6 +20,12 @@ const upload = multer({ storage: storage });
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, 'build')));
 
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
+
+// parse application/json
+app.use(bodyParser.json())
+
 // File upload route
 app.post('/upload', upload.single('file'), async (req, res) => {
 
