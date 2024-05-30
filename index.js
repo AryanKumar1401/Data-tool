@@ -100,7 +100,7 @@ async function createThread(fileId) {
       messages: [
         {
           role: "user",
-          content: "Describe this file",
+          content: "create a line graph for this file. Use your best intuition for what the columns and the corresponding data should be, but you must return a line graph.",
           attachments: [{ file_id: fileId, tools: [{ type: "code_interpreter" }] }],
         },
       ],
@@ -165,33 +165,34 @@ app.post('/api/run-thread', async (req, res) => {
     console.log('Thread completed successfully.');
 
     // Get the last assistant message from the messages array
-    const storedThreadOutputArray = await openai.beta.threads.messages.list(storedThreadId);
+    const messages = await openai.beta.threads.messages.list(storedThreadId);
 
-    //retrieve message from the thread
-    console.log('First Messages from thread:', storedThreadOutputArray.data[0].content[0].text.value);
-    
-    // const message = await openai.beta.threads.messages.retrieve(
-    //     "thread_abc123",
-    //     "msg_abc123"
-    //   );
-    
-    //   console.log(message);
-
-    for (let i = 0; i < storedThreadOutputArray.length; i++) {
-      const message = storedThreadOutputArray[i];
-      if (message.image_url) {
-        // Handle image URL
-        console.log(`Downloading image from URL: ${message.image_url}`);
-        await downloadImage(message.image_url, path.join(downloadDir, `image_${i + 1}.png`));
-      } else if (message.image_data) {
-        // Handle base64 encoded image
-        console.log(`Saving base64 image: image_${i + 1}.png`);
-        saveBase64Image(message.image_data, path.join(downloadDir, `image_${i + 1}.png`));
+    //display thread messages 
+    for (var i = 0; i<messages.data.length; i++) {
+        console.log("Message",i, " ",messages.data[i].content[0]);
       }
-    }
-    console.log('All images processed.');
+      const imageId = messages.data[0].content[0].image_file.file_id;
+      console.log("image id", imageId);
+      const viz = await openai.files.content(imageId);
+      console.log(viz.headers);
+      const bufferView = new Uint8Array(await viz.arrayBuffer());
+      fs.writeFileSync("./visualizations/"+imageId+".png", bufferView);
 
-    res.json({ messages: storedThreadOutputArray });
+    // for (let i = 0; i < storedThreadOutputArray.length; i++) {
+    //   const message = storedThreadOutputArray[i];
+    //   if (message.image_url) {
+    //     // Handle image URL
+    //     console.log(`Downloading image from URL: ${message.image_url}`);
+    //     await downloadImage(message.image_url, path.join(downloadDir, `image_${i + 1}.png`));
+    //   } else if (message.image_data) {
+    //     // Handle base64 encoded image
+    //     console.log(`Saving base64 image: image_${i + 1}.png`);
+    //     saveBase64Image(message.image_data, path.join(downloadDir, `image_${i + 1}.png`));
+    //   }
+    // }
+    // console.log('All images processed.');
+
+    res.json({ messages: bufferView });
 
   } catch (error) {
     console.error('Error:', error);

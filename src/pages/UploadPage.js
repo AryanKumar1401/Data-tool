@@ -130,7 +130,7 @@ const UploadPage = () => {
         handleChatSubmit={handleChatSubmit}
       />
       <div className="flex flex-col items-center w-1/3 ml-5 bg-white p-5 border border-gray-300 h-4/5 overflow-y-auto">
-        {chartData && <ChartComponent chartData={chartData} />}
+        {/* {chartData && <ChartComponent chartData={chartData} />} */}
       </div>
     </div>
   );
