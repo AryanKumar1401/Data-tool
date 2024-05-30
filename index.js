@@ -3,8 +3,14 @@ const path = require('path');
 const multer = require('multer');
 const OpenAI = require('openai');
 const fs = require('fs');
+const axios = require('axios');
+const bodyParser = require('body-parser');
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+const openai = new OpenAI({
+  apiKey: process.env.REACT_APP_OPENAI_API_KEY,
+});
 
 // Set up storage engine for Multer
 const storage = multer.diskStorage({
@@ -15,62 +21,55 @@ const storage = multer.diskStorage({
 });
 
 // Initialize upload variable
-const upload = multer({ storage }).single('file');
+const upload = multer({ storage: storage });
+
+// Ensure the uploads directory exists
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir);
+}
+
+// Ensure the downloads directory exists
+const downloadDir = path.join(__dirname, 'downloads');
+if (!fs.existsSync(downloadDir)) {
+  fs.mkdirSync(downloadDir);
+}
 
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, 'build')));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 // File upload route
-app.post('/upload', (req, res) => {
+app.post('/upload', upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      throw new Error('No file selected!');
+    }
 
-//   upload(req, res, (err) => {
-//     if (err) {
-//       return res.status(400).json({ message: err });
-//     } else {
-//       if (req.file == undefined) {
-//         return res.status(400).json({ message: 'No file selected!' });
-//       } else {
-//         const filePath = req.file.path;
-//         const openai = new OpenAI({
-//           apiKey: process.env.REACT_APP_OPENAI_API_KEY,
-//         });
+    const filePath = req.file.path;
 
-//         fs.createReadStream(filePath).pipe(openai.files.create({
-//           file: fs.createReadStream(filePath),
-//           purpose: 'assistants',
-//         })).then(file => {
-//           res.json({
-//             message: 'File uploaded successfully!',
-//             fileId: file.id,
-//           });
-//         }).catch(error => {
-//           console.error('Error uploading file to OpenAI:', error);
-//           res.status(500).json({ message: 'Failed to upload file to OpenAI.' });
-//         });
-//       }
-//     }
-//   });
-        const filePath = req.file;
-        const openai = new OpenAI({
-          apiKey: process.env.REACT_APP_OPENAI_API_KEY,
-        });
-    file = openai.files.create({
-        file: fs.createReadStream(filePath),
-        purpose: 'assistants',
-    })
+    const file = await openai.files.create({
+      file: fs.createReadStream(filePath),
+      purpose: 'assistants',
+    });
+
+    console.log('File uploaded successfully:', file.id);
+
     res.json({
-                    message: 'File uploaded successfully!',
-                    fileId: file.id,
-                  });
+      message: 'File uploaded successfully!',
+      fileId: file.id,
+    });
+  } catch (error) {
+    console.error('Error uploading file:', error);
+    res.status(500).json({ message: 'Failed to upload file to OpenAI.' });
+  }
 });
 
+let storedAssistantId = null;
 app.post('/api/create-assistant', async (req, res) => {
   const { fileId } = req.body;
   try {
-    const openai = new OpenAI({
-      apiKey: process.env.REACT_APP_OPENAI_API_KEY,
-    });
-
     const assistant = await openai.beta.assistants.create({
       name: "Data Visualizer",
       description: "You are great at creating beautiful data visualizations. You analyze data present in .csv files, understand trends, and come up with data visualizations relevant to those trends. You also share a brief text summary of the trends observed.",
@@ -83,6 +82,9 @@ app.post('/api/create-assistant', async (req, res) => {
       },
     });
 
+    console.log('Assistant created successfully:', assistant.id);
+    storedAssistantId = assistant.id;
+
     res.json({ id: assistant.id });
   } catch (error) {
     console.error('Error creating assistant:', error);
@@ -90,32 +92,141 @@ app.post('/api/create-assistant', async (req, res) => {
   }
 });
 
-app.post('/api/create-thread', async (req, res) => {
-  const { fileId, assistantId } = req.body;
-  try {
-    const openai = new OpenAI({
-      apiKey: process.env.REACT_APP_OPENAI_API_KEY,
-    });
+let storedThreadId = null;
 
+async function createThread(fileId) {
+  try {
     const thread = await openai.beta.threads.create({
-      assistant_id: assistantId,
       messages: [
         {
           role: "user",
-          content: "Create 3 data visualizations based on the trends in this file.",
+          content: "create a line graph for this file. Use your best intuition for what the columns and the corresponding data should be, but you must return a line graph.",
           attachments: [{ file_id: fileId, tools: [{ type: "code_interpreter" }] }],
         },
       ],
     });
 
-    res.json({ id: thread.id });
+    storedThreadId = thread.id;
+    console.log('Thread created successfully:', thread.id);
+
+    return storedThreadId;
   } catch (error) {
     console.error('Error creating thread:', error);
-    res.status(500).json({ message: 'Failed to create thread.' });
+    throw new Error('Failed to create thread.');
+  }
+}
+
+let runIdToBeStored = null;
+
+async function createRun() {
+  try {
+    const run = await openai.beta.threads.runs.createAndPoll(storedThreadId, {
+      assistant_id: storedAssistantId,
+      instructions: "Please create the visualizations."
+    });
+
+    runIdToBeStored = run.id;
+    console.log("Run created successfully:", runIdToBeStored);
+    return runIdToBeStored;
+  } catch (error) {
+    console.error("Error:", error);
+    throw new Error('Failed to create run.');
+  }
+}
+
+app.post('/api/create-thread', async (req, res) => {
+  const { fileId } = req.body;
+  try {
+    const threadId = await createThread(fileId);
+    res.json({ id: threadId });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ message: error.message });
   }
 });
 
-// All other GET requests not handled before will return the React app
+app.post('/api/run-thread', async (req, res) => {
+  try {
+    const runId = await createRun();
+    if (!runIdToBeStored) {
+      throw new Error('No run Id available to run.');
+    }
+
+    //res.json({ id: runIdToBeStored });
+
+    // Polling mechanism to see if runStatus is completed
+    let runStatus;
+    do {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      runStatus = await openai.beta.threads.runs.retrieve(storedThreadId, runIdToBeStored);
+      console.log('Thread status:', runStatus.status);
+    } while (runStatus.status !== "completed");
+
+    console.log('Thread completed successfully.');
+
+    // Get the last assistant message from the messages array
+    const messages = await openai.beta.threads.messages.list(storedThreadId);
+
+    //display thread messages 
+    for (var i = 0; i<messages.data.length; i++) {
+        console.log("Message",i, " ",messages.data[i].content[0]);
+      }
+      const imageId = messages.data[0].content[0].image_file.file_id;
+      console.log("image id", imageId);
+      const viz = await openai.files.content(imageId);
+      console.log(viz.headers);
+      const bufferView = new Uint8Array(await viz.arrayBuffer());
+      fs.writeFileSync("./visualizations/"+imageId+".png", bufferView);
+
+    // for (let i = 0; i < storedThreadOutputArray.length; i++) {
+    //   const message = storedThreadOutputArray[i];
+    //   if (message.image_url) {
+    //     // Handle image URL
+    //     console.log(`Downloading image from URL: ${message.image_url}`);
+    //     await downloadImage(message.image_url, path.join(downloadDir, `image_${i + 1}.png`));
+    //   } else if (message.image_data) {
+    //     // Handle base64 encoded image
+    //     console.log(`Saving base64 image: image_${i + 1}.png`);
+    //     saveBase64Image(message.image_data, path.join(downloadDir, `image_${i + 1}.png`));
+    //   }
+    // }
+    // console.log('All images processed.');
+
+    res.json({ messages: bufferView });
+
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Function to download and save an image from a URL
+async function downloadImage(url, filePath) {
+  try {
+    const response = await axios({
+      url,
+      responseType: 'arraybuffer'
+    });
+
+    fs.writeFileSync(filePath, response.data);
+    console.log(`Image saved to ${filePath}`);
+  } catch (error) {
+    console.error(`Failed to download image from ${url}:`, error);
+  }
+}
+
+// Function to decode base64 and save as image
+function saveBase64Image(base64String, filePath) {
+  try {
+    const imageData = Buffer.from(base64String, 'base64');
+    fs.writeFileSync(filePath, imageData);
+    console.log(`Base64 image saved to ${filePath}`);
+  } catch (error) {
+    console.error(`Failed to save base64 image to ${filePath}:`, error);
+  }
+}
+
+// Catch-all handler to serve the React app
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });

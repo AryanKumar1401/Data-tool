@@ -47,11 +47,20 @@ const UploadPage = () => {
       });
       setMsg(response.data.message);
 
-      // Handle the assistant creation and thread creation here if needed
       const fileId = response.data.fileId;
+      console.log('File uploaded with ID:', fileId);
+
       const assistant = await axios.post('/api/create-assistant', { fileId });
+      console.log('Assistant created with ID:', assistant.data.id);
+
       const thread = await axios.post('/api/create-thread', { fileId, assistantId: assistant.data.id });
-      console.log(`Assistant and thread created successfully! Assistant ID: ${assistant.data.id}, Thread ID: ${thread.data.id}`);
+      console.log('Thread created with ID:', thread.data.id);
+
+      const responseFromThread = await axios.post('/api/run-thread');
+      console.log('Thread response:', responseFromThread.data);
+
+      const dataFromResponse = responseFromThread.data;
+      console.log('Data from response:', dataFromResponse);
     } catch (error) {
       console.error('Error uploading file:', error);
       setMsg('Failed to upload file.');
@@ -85,7 +94,6 @@ const UploadPage = () => {
     });
   };
 
-  // Make visualization charts
   const generateChartData = (data) => {
     const labels = Object.keys(data[0]);
     const datasets = labels.map((label, index) => {
@@ -122,10 +130,13 @@ const UploadPage = () => {
         handleChatSubmit={handleChatSubmit}
       />
       <div className="flex flex-col items-center w-1/3 ml-5 bg-white p-5 border border-gray-300 h-4/5 overflow-y-auto">
-        {chartData && <ChartComponent chartData={chartData} />}
+        {/* {chartData && <ChartComponent chartData={chartData} />} */}
       </div>
     </div>
   );
 };
 
 export default UploadPage;
+
+
+
