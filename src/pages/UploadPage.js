@@ -5,6 +5,7 @@ import ChartComponent from '../components/ChartComponent';
 import Papa from 'papaparse';
 import axios from 'axios';
 
+
 const UploadPage = () => {
   const [file, setFile] = useState(null);
   const [fileContent, setFileContent] = useState('');
@@ -14,8 +15,9 @@ const UploadPage = () => {
   const [input, setInput] = useState('');
   const [chartData, setChartData] = useState(null);
   const [imageId, setImageId] = useState(null);
-  const [imageSrc, setImageSrc] = useState(null); // State for storing imageSrc
+  const [imageSrc, setImageSrc] = useState(''); // State for storing imageSrc
   const [imageError, setImageError] = useState(false); // State for handling image error
+  const [flagForVisualizerDisplayer, setFlagForVisualizerDisplayer] = useState(false);
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
@@ -64,7 +66,12 @@ const UploadPage = () => {
       console.log('Image ID:', imageId);
       console.log('Messages:', messages);
       setImageId(imageId);
-      setImageSrc(`/visualizations/${imageId}.png`); // Update state with the image src
+      console.log(imageId);
+
+      console.log(typeof imageId);
+
+      
+      setFlagForVisualizerDisplayer(true);
       setImageError(false); // Reset image error state
     } catch (error) {
       console.error('Error uploading file:', error);
@@ -119,15 +126,6 @@ const UploadPage = () => {
 
     setChartData(chartData);
   };
-  const handleDisplayImage = () => {
-    if (imageId) {
-      setImageSrc(`/visualizations/file-oRAdWmPUZshxG7wKsmmIwH8N.png`); // Update state with the image src
-      
-      setImageError(false); // Reset image error state
-    } else {
-      setMsg('No image ID found.');
-    }
-  };
 
   return (
     <div className="flex flex-row items-start justify-center h-screen bg-gray-100">
@@ -144,28 +142,242 @@ const UploadPage = () => {
         handleChatSubmit={handleChatSubmit}
       />
       <div className="flex flex-col items-center w-1/3 ml-5 bg-white p-5 border border-gray-300 h-4/5 overflow-y-auto">
-      <button
-          onClick={handleDisplayImage}
-          className="px-4 py-2 mt-5 bg-blue-500 text-white rounded"
-        >
-          Display Image
-        </button>
-      {imageSrc && !imageError ? (
-          <img
-            src={imageSrc}
-            alt="Visualization"
-            className="mt-5"
-            onError={() => setImageError(true)}
-          />
-        ) : (
-          imageError && <p>Image not found.</p>
+
+       
+
+        {!flagForVisualizerDisplayer && (
+          <p>No Visualization to Display Yet</p>
         )}
+
       </div>
     </div>
   );
 };
 
 export default UploadPage;
+
+
+
+
+
+
+
+
+// import React, { useState } from 'react';
+// import FileUpload from '../components/FileUpload';
+// import ChatBox from '../components/ChatBox';
+// import ChartComponent from '../components/ChartComponent';
+// import Papa from 'papaparse';
+// import axios from 'axios';
+
+
+// const UploadPage = () => {
+//   const [file, setFile] = useState(null);
+//   const [fileContent, setFileContent] = useState('');
+//   const [progress, setProgress] = useState({ started: false, percentageCompleted: 0 });
+//   const [msg, setMsg] = useState(null);
+//   const [messages, setMessages] = useState([]);
+//   const [input, setInput] = useState('');
+//   const [chartData, setChartData] = useState(null);
+//   const [imageId, setImageId] = useState(null);
+//   const [imageSrc, setImageSrc] = useState(''); // State for storing imageSrc
+//   const [imageError, setImageError] = useState(false); // State for handling image error
+//   const [flagForVisualizerDisplayer, setflagForVisualizerDisplayer] = useState(false);
+//   let filePath = `/visualizations/${imageId}.png`;
+
+
+
+
+  
+
+
+  
+
+  
+  
+
+// const ImageFunction = () => {
+//   if(flagForVisualizerDisplayer === true) {
+//     console.log(filePath);
+//     console.log({filePath});
+//     console.log(typeof filePath);
+//     console.log(typeof {filePath});
+
+
+//     return(<img
+//       src={String(filePath)}
+//       alt="Visualization"
+//       className="mt-5"
+      
+      
+//     />)
+    
+
+//   } else {
+//     return(<p>No Visualization to Display Yet</p>)
+    
+//   }
+// }
+  
+
+//   const handleFileChange = (event) => {
+//     const selectedFile = event.target.files[0];
+//     setFile(selectedFile);
+
+//     const reader = new FileReader();
+//     reader.onload = (e) => {
+//       setFileContent(e.target.result);
+//       parseCSV(e.target.result);
+//     };
+//     reader.readAsText(selectedFile);
+//   };
+
+//   const testfunction = (event) => {
+//     setImageSrc("hello");
+//   }
+
+//   const handleUpload = async () => {
+//     if (!file) {
+//       alert('Please choose a file first!');
+//       return;
+//     }
+
+//     const formData = new FormData();
+//     formData.append('file', file);
+
+//     try {
+//       const response = await axios.post('/upload', formData, {
+//         headers: {
+//           'Content-Type': 'multipart/form-data',
+//         },
+//         onUploadProgress: (progressEvent) => {
+//           const percentageCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+//           setProgress({ started: true, percentageCompleted });
+//         },
+//       });
+//       setMsg(response.data.message);
+
+//       const fileId = response.data.fileId;
+//       console.log('File uploaded with ID:', fileId);
+
+//       const assistant = await axios.post('/api/create-assistant', { fileId });
+//       console.log('Assistant created with ID:', assistant.data.id);
+
+//       const thread = await axios.post('/api/create-thread', { fileId, assistantId: assistant.data.id });
+//       console.log('Thread created with ID:', thread.data.id);
+
+//       const responseFromThread = await axios.post('/api/run-thread');
+//       const { imageId, messages } = responseFromThread.data;
+//       console.log('Image ID:', imageId);
+//       console.log('Messages:', messages);
+//       setImageId(imageId);
+//       console.log(imageId);
+
+//       console.log(typeof imageId);
+
+      
+//       setflagForVisualizerDisplayer(true);
+
+
+
+
+
+//       setImageError(false); // Reset image error state
+//     } catch (error) {
+//       console.error('Error uploading file:', error);
+//       setMsg('Failed to upload file.');
+//     }
+//   };
+
+//   const handleChatSubmit = async () => {
+//     if (!input.trim()) return;
+
+//     const newMessage = { text: input, isUser: true };
+//     setMessages((prevMessages) => [...prevMessages, newMessage]);
+//     setInput('');
+
+//     try {
+//       const response = await axios.post('/api/get-response', { input, fileContent });
+//       const botMessage = { text: response.data.message, isUser: false };
+//       setMessages((prevMessages) => [...prevMessages, botMessage]);
+//     } catch (error) {
+//       console.error('Error with OpenAI API:', error);
+//     }
+//   };
+
+//   const parseCSV = (content) => {
+//     Papa.parse(content, {
+//       header: true,
+//       dynamicTyping: true,
+//       complete: function (results) {
+//         const data = results.data;
+//         generateChartData(data);
+//       },
+//     });
+//   };
+
+//   const generateChartData = (data) => {
+//     const labels = Object.keys(data[0]);
+//     const datasets = labels.map((label, index) => {
+//       const values = data.map((row) => row[label]);
+//       return {
+//         label: label,
+//         data: values,
+//         backgroundColor: `rgba(${75 + index * 40}, 192, 192, 0.4)`,
+//         borderColor: `rgba(${75 + index * 40}, 192, 192, 1)`,
+//         borderWidth: 1,
+//       };
+//     });
+
+//     const chartData = {
+//       labels: data.map((_, index) => `Row ${index + 1}`),
+//       datasets: datasets,
+//     };
+
+//     setChartData(chartData);
+//   };
+//   const handleDisplayImage = () => {
+//     if (imageId) {
+//       setImageSrc(`/public/visualizations/${imageId}.png`); // Update state with the image src
+
+      
+      
+//       setImageError(false); // Reset image error state
+//     } else {
+//       setMsg('No image ID found.');
+//     }
+//   };
+
+//   const filesource = '/visualizations/file-3aUaJ91f4VYi3SSQD4VK55vJ.png';
+
+//   return (
+//     <div className="flex flex-row items-start justify-center h-screen bg-gray-100">
+//       <FileUpload
+//         handleFileChange={handleFileChange}
+//         handleUpload={handleUpload}
+//         progress={progress}
+//         msg={msg}
+//       />
+//       <ChatBox
+//         messages={messages}
+//         input={input}
+//         setInput={setInput}
+//         handleChatSubmit={handleChatSubmit}
+//       />
+//       <div className="flex flex-col items-center w-1/3 ml-5 bg-white p-5 border border-gray-300 h-4/5 overflow-y-auto">
+
+//         <img src='/visualizations/file-A8WroVJzMGDw3TCywyERtCGz.png' />
+
+
+//         <ImageFunction />
+
+        
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default UploadPage;
 
 
 

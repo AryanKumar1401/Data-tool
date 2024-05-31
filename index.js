@@ -5,8 +5,11 @@ const OpenAI = require('openai');
 const fs = require('fs');
 const axios = require('axios');
 const bodyParser = require('body-parser');
+const { useState } = require('react');
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+
 
 const openai = new OpenAI({
   apiKey: process.env.REACT_APP_OPENAI_API_KEY,
@@ -162,6 +165,8 @@ app.post('/api/run-thread', async (req, res) => {
       console.log('Thread status:', runStatus.status);
     } while (runStatus.status !== "completed");
 
+  
+
     console.log('Thread completed successfully.');
 
     // Get the last assistant message from the messages array
@@ -234,3 +239,4 @@ app.get('*', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
