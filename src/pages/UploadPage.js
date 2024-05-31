@@ -121,7 +121,7 @@ const UploadPage = () => {
   };
   const handleDisplayImage = () => {
     if (imageId) {
-      setImageSrc(`/visualizations/${imageId}.png`); // Update state with the image src
+      setImageSrc(`/visualizations/file-oRAdWmPUZshxG7wKsmmIwH8N.png`); // Update state with the image src
       
       setImageError(false); // Reset image error state
     } else {
