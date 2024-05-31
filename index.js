@@ -176,7 +176,7 @@ app.post('/api/run-thread', async (req, res) => {
       const viz = await openai.files.content(imageId);
       console.log(viz.headers);
       const bufferView = new Uint8Array(await viz.arrayBuffer());
-      fs.writeFileSync("./visualizations/"+imageId+".png", bufferView);
+      fs.writeFileSync("./public/visualizations/"+imageId+".png", bufferView);
 
     // for (let i = 0; i < storedThreadOutputArray.length; i++) {
     //   const message = storedThreadOutputArray[i];
@@ -192,7 +192,7 @@ app.post('/api/run-thread', async (req, res) => {
     // }
     // console.log('All images processed.');
 
-    res.json({ messages: bufferView });
+    res.json({ imageId, messages });
 
   } catch (error) {
     console.error('Error:', error);

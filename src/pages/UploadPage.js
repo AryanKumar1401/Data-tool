@@ -13,6 +13,9 @@ const UploadPage = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [chartData, setChartData] = useState(null);
+  const [imageId, setImageId] = useState(null);
+  const [imageSrc, setImageSrc] = useState(null); // State for storing imageSrc
+  const [imageError, setImageError] = useState(false); // State for handling image error
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
@@ -57,10 +60,12 @@ const UploadPage = () => {
       console.log('Thread created with ID:', thread.data.id);
 
       const responseFromThread = await axios.post('/api/run-thread');
-      console.log('Thread response:', responseFromThread.data);
-
-      const dataFromResponse = responseFromThread.data;
-      console.log('Data from response:', dataFromResponse);
+      const { imageId, messages } = responseFromThread.data;
+      console.log('Image ID:', imageId);
+      console.log('Messages:', messages);
+      setImageId(imageId);
+      setImageSrc(`/visualizations/${imageId}.png`); // Update state with the image src
+      setImageError(false); // Reset image error state
     } catch (error) {
       console.error('Error uploading file:', error);
       setMsg('Failed to upload file.');
@@ -114,6 +119,15 @@ const UploadPage = () => {
 
     setChartData(chartData);
   };
+  const handleDisplayImage = () => {
+    if (imageId) {
+      setImageSrc(`/visualizations/${imageId}.png`); // Update state with the image src
+      
+      setImageError(false); // Reset image error state
+    } else {
+      setMsg('No image ID found.');
+    }
+  };
 
   return (
     <div className="flex flex-row items-start justify-center h-screen bg-gray-100">
@@ -130,7 +144,22 @@ const UploadPage = () => {
         handleChatSubmit={handleChatSubmit}
       />
       <div className="flex flex-col items-center w-1/3 ml-5 bg-white p-5 border border-gray-300 h-4/5 overflow-y-auto">
-        {/* {chartData && <ChartComponent chartData={chartData} />} */}
+      <button
+          onClick={handleDisplayImage}
+          className="px-4 py-2 mt-5 bg-blue-500 text-white rounded"
+        >
+          Display Image
+        </button>
+      {imageSrc && !imageError ? (
+          <img
+            src={imageSrc}
+            alt="Visualization"
+            className="mt-5"
+            onError={() => setImageError(true)}
+          />
+        ) : (
+          imageError && <p>Image not found.</p>
+        )}
       </div>
     </div>
   );
