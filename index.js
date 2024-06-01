@@ -5,11 +5,21 @@ const OpenAI = require('openai');
 const fs = require('fs');
 const axios = require('axios');
 const bodyParser = require('body-parser');
+const admin = require('firebase-admin');
 const { useState } = require('react');
 const app = express();
+require('dotenv').config();
+
 const PORT = process.env.PORT || 3000;
 
+const serviceAccount = require(process.env.FIREBASE_PATH); // Replace with your Firebase service account key
 
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  storageBucket: 'data-tool-6c41e.appspot.com' // Replace with your Firebase project ID
+});
+
+const bucket = admin.storage().bucket();
 
 const openai = new OpenAI({
   apiKey: process.env.REACT_APP_OPENAI_API_KEY,
@@ -165,8 +175,6 @@ app.post('/api/run-thread', async (req, res) => {
       console.log('Thread status:', runStatus.status);
     } while (runStatus.status !== "completed");
 
-  
-
     console.log('Thread completed successfully.');
 
     // Get the last assistant message from the messages array
@@ -181,23 +189,28 @@ app.post('/api/run-thread', async (req, res) => {
       const viz = await openai.files.content(imageId);
       console.log(viz.headers);
       const bufferView = new Uint8Array(await viz.arrayBuffer());
-      fs.writeFileSync("./public/visualizations/"+imageId+".png", bufferView);
+      const imagePath = `./public/visualizations/${imageId}.png`;
+      fs.writeFileSync(imagePath, bufferView);
+      console.log("the image is saved");
 
-    // for (let i = 0; i < storedThreadOutputArray.length; i++) {
-    //   const message = storedThreadOutputArray[i];
-    //   if (message.image_url) {
-    //     // Handle image URL
-    //     console.log(`Downloading image from URL: ${message.image_url}`);
-    //     await downloadImage(message.image_url, path.join(downloadDir, `image_${i + 1}.png`));
-    //   } else if (message.image_data) {
-    //     // Handle base64 encoded image
-    //     console.log(`Saving base64 image: image_${i + 1}.png`);
-    //     saveBase64Image(message.image_data, path.join(downloadDir, `image_${i + 1}.png`));
-    //   }
-    // }
-    // console.log('All images processed.');
+      // Upload the file to Firebase Storage
+      await bucket.upload(imagePath, {
+        destination: `visualizations/${imageId}.png`,
+        metadata: {
+          contentType: 'image/png',
+        },
+      });
 
-    res.json({ imageId, messages });
+      // Get the public URL of the uploaded file
+      const file = bucket.file(`visualizations/${imageId}.png`);
+      const [url] = await file.getSignedUrl({
+        action: 'read',
+        expires: '03-01-2500', // Set a far future expiration date
+      });
+
+      console.log('File uploaded to Firebase and accessible at:', url);
+
+    res.json({ imageUrl: url, messages });
 
   } catch (error) {
     console.error('Error:', error);
@@ -206,30 +219,6 @@ app.post('/api/run-thread', async (req, res) => {
 });
 
 // Function to download and save an image from a URL
-async function downloadImage(url, filePath) {
-  try {
-    const response = await axios({
-      url,
-      responseType: 'arraybuffer'
-    });
-
-    fs.writeFileSync(filePath, response.data);
-    console.log(`Image saved to ${filePath}`);
-  } catch (error) {
-    console.error(`Failed to download image from ${url}:`, error);
-  }
-}
-
-// Function to decode base64 and save as image
-function saveBase64Image(base64String, filePath) {
-  try {
-    const imageData = Buffer.from(base64String, 'base64');
-    fs.writeFileSync(filePath, imageData);
-    console.log(`Base64 image saved to ${filePath}`);
-  } catch (error) {
-    console.error(`Failed to save base64 image to ${filePath}:`, error);
-  }
-}
 
 // Catch-all handler to serve the React app
 app.get('*', (req, res) => {
@@ -239,4 +228,3 @@ app.get('*', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-
