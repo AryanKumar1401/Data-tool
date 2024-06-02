@@ -5,7 +5,7 @@ import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
 import UploadPage from './pages/UploadPage';
 import PricingPage from './pages/PricingPage';
-import SignIn from './components/SignIn';
+import SignIn from './components/signIn';
 import { signOut } from 'firebase/auth';
 import { auth } from './firebase';
 import { Helmet } from 'react-helmet';
