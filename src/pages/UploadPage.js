@@ -174,30 +174,31 @@ const UploadPage = () => {
     setimgSRCReturnLocal(imageSrcReturn());
   }, [imageSrcReturn]);
 
-  const functionIf = () => {
-    if(fileUploadSuccess === true && threadNotifier === false) {
-      <UploadPageAfterUploading />
-   }
-   else if(fileUploadSuccess === true && threadNotifier === true) {
-     <UploadPageAfterLoadingVisualization />
-   } else {
-     <PageContainer>
-       <FileUpload
-         handleFileChange={handleFileChange}
-         handleUpload={handleUpload}
-         progress={progressStatus}
-         msg={msgStatus}
-       />
-     </PageContainer>
-   }
-
-  }
+  const renderContent = () => {
+    //return <UploadPageAfterLoadingVisualization />;
+    if (fileUploadSuccess && !threadNotifier) {
+      return <UploadPageAfterUploading />;
+    } else if (fileUploadSuccess && threadNotifier) {
+      return <UploadPageAfterLoadingVisualization />;
+    } else {
+      return (
+        <PageContainer>
+          <FileUpload
+            handleFileChange={handleFileChange}
+            handleUpload={handleUpload}
+            progress={progressStatus}
+            msg={msgStatus}
+          />
+        </PageContainer>
+      );
+    }
+  };
 
   
 
   return (
     <div>
-      {functionIf}
+      {renderContent()}
     </div>
   );
   
