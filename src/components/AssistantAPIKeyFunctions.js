@@ -63,9 +63,10 @@ const AssistantAPIKeyFunctions = () => {
       console.log('Thread created with ID:', thread.data.id);
 
       const responseFromThread = await axios.post('/api/run-thread');
-      const { imageUrl, messages } = responseFromThread.data;
+      const { imageUrl, messages, fileContent } = responseFromThread.data;
       console.log('Image ID:', imageUrl);
       console.log('Messages:', messages);
+      console.log('file content: ',fileContent);
       setImageSrc(imageUrl); // Update state with the image src
       imageSrcExport = imageUrl;
       console.log("imageSrc: ", imageSrc);

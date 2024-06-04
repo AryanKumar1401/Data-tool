@@ -160,24 +160,14 @@ app.post('/api/create-thread', async (req, res) => {
 
 
 app.post('/api/get-response', async (req, res) => {
-  const { input, fileContentExporter } = req.body;
   try {
-    // Here, call the OpenAI API using the input and fileContentExporter
-    // For example:
-    const response = await axios.post('https://api.openai.com/v1/your-endpoint', {
-      // Your payload
-    }, {
-      headers: {
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
-      }
-    });
-    res.json({ message: response.data });
+    const messages = await openai.beta.threads.messages.list(storedThreadId);
+    res.json({ messages: messages.data });
   } catch (error) {
     console.error('Error with OpenAI API:', error);
     res.status(500).json({ error: 'An error occurred' });
   }
 });
-
 
 app.post('/api/run-thread', async (req, res) => {
   try {
@@ -186,52 +176,53 @@ app.post('/api/run-thread', async (req, res) => {
       throw new Error('No run Id available to run.');
     }
 
-    //res.json({ id: runIdToBeStored });
-
     // Polling mechanism to see if runStatus is completed
     let runStatus;
     do {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       runStatus = await openai.beta.threads.runs.retrieve(storedThreadId, runIdToBeStored);
       console.log('Thread status:', runStatus.status);
+      if (runStatus.status === "failed") break;
     } while (runStatus.status !== "completed");
 
     console.log('Thread completed successfully.');
 
-    // Get the last assistant message from the messages array
+
+    if (runStatus.status === "failed") storedThreadId = "thread_8UAyMMasmkr8vArfjvtibres";
+
     const messages = await openai.beta.threads.messages.list(storedThreadId);
 
     //display thread messages 
-    for (var i = 0; i<messages.data.length; i++) {
-        console.log("Message",i, " ",messages.data[i].content[0]);
-      }
-      const imageId = messages.data[0].content[0].image_file.file_id;
-      console.log("image id", imageId);
-      const viz = await openai.files.content(imageId);
-      console.log(viz.headers);
-      const bufferView = new Uint8Array(await viz.arrayBuffer());
-      const imagePath = `./public/visualizations/${imageId}.png`;
-      fs.writeFileSync(imagePath, bufferView);
-      console.log("the image is saved");
+    for (var i = 0; i < messages.data.length; i++) {
+      console.log("Message", i, " ", messages.data[i].content[0]);
+    }
+    const imageId = messages.data[0].content[0].image_file.file_id;
+    console.log("image id", imageId);
+    const viz = await openai.files.content(imageId);
+    console.log(viz.headers);
+    const bufferView = new Uint8Array(await viz.arrayBuffer());
+    const imagePath = `./public/visualizations/${imageId}.png`;
+    fs.writeFileSync(imagePath, bufferView);
+    console.log("the image is saved");
 
-      // Upload the file to Firebase Storage
-      await bucket.upload(imagePath, {
-        destination: `visualizations/${imageId}.png`,
-        metadata: {
-          contentType: 'image/png',
-        },
-      });
+    // Upload the file to Firebase Storage
+    await bucket.upload(imagePath, {
+      destination: `visualizations/${imageId}.png`,
+      metadata: {
+        contentType: 'image/png',
+      },
+    });
 
-      // Get the public URL of the uploaded file
-      const file = bucket.file(`visualizations/${imageId}.png`);
-      const [url] = await file.getSignedUrl({
-        action: 'read',
-        expires: '03-01-2500', // Set a far future expiration date
-      });
+    // Get the public URL of the uploaded file
+    const file = bucket.file(`visualizations/${imageId}.png`);
+    const [url] = await file.getSignedUrl({
+      action: 'read',
+      expires: '03-01-2500', // Set a far future expiration date
+    });
 
-      console.log('File uploaded to Firebase and accessible at:', url);
+    console.log('File uploaded to Firebase and accessible at:', url);
 
-    res.json({ imageUrl: url, messages });
+    res.json({ imageUrl: url, messages: messages.data, fileContent: viz });
 
   } catch (error) {
     console.error('Error:', error);
@@ -239,7 +230,6 @@ app.post('/api/run-thread', async (req, res) => {
   }
 });
 
-// Function to download and save an image from a URL
 
 // Catch-all handler to serve the React app
 app.get('*', (req, res) => {

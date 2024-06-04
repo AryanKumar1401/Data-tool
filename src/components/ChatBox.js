@@ -6,7 +6,8 @@ const ChatBox = ({ messages, input, setInput, handleChatSubmit }) => {
       <div className="flex flex-col items-start w-full mt-5">
         {messages.map((msg, index) => (
           <div key={index} className={`p-2 rounded my-1 ${msg.isUser ? 'bg-blue-500 text-white self-end' : 'bg-gray-200 text-black self-start'}`}>
-            {msg.text}
+            {msg.isUser && msg.text}
+            {!msg.isUser && msg.text.value}
           </div>
         ))}
       </div>
