@@ -1,16 +1,23 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
+let imageSrcExport = '';
+let fileContentExporter = '';
+
 const AssistantAPIKeyFunctions = () => {
   const [file, setFile] = useState(null);
   const [fileContent, setFileContent] = useState('');
   const [progress, setProgress] = useState({ started: false, percentageCompleted: 0 });
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
+  // const [messages, setMessages] = useState([]);
+  // const [input, setInput] = useState('');
   const [imageSrc, setImageSrc] = useState(null); // State for storing imageSrc
   const [fileUploadSuccess, setFileUploadSuccess] = useState(false);
   const [threadFinishNotifier, setThreadFinishNotifier] = useState(false);
+ 
 
+
+  
+ 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
     setFile(selectedFile);
@@ -18,6 +25,7 @@ const AssistantAPIKeyFunctions = () => {
     const reader = new FileReader();
     reader.onload = (e) => {
       setFileContent(e.target.result);
+      fileContentExporter = fileContent;
     };
     reader.readAsText(selectedFile);
   };
@@ -42,6 +50,7 @@ const AssistantAPIKeyFunctions = () => {
         },
       });
 
+
       const fileId = response.data.fileId;
       console.log('File uploaded with ID:', fileId);
 
@@ -58,46 +67,55 @@ const AssistantAPIKeyFunctions = () => {
       console.log('Image ID:', imageUrl);
       console.log('Messages:', messages);
       setImageSrc(imageUrl); // Update state with the image src
+      imageSrcExport = imageUrl;
+      console.log("imageSrc: ", imageSrc);
+      console.log("imagesrcexport: ", imageSrcExport);
+      console.log("imageURL:" , imageUrl);
       setThreadFinishNotifier(true);
     } catch (error) {
       console.error('Error uploading file:', error);
     }
   };
 
-  const handleChatSubmit = async () => {
-    if (!input.trim()) return;
+  // const handleChatSubmit = async () => {
+  //   if (!input.trim()) return;
 
-    const newMessage = { text: input, isUser: true };
-    setMessages((prevMessages) => [...prevMessages, newMessage]);
-    setInput('');
+  //   const newMessage = { text: input, isUser: true };
+  //   setMessages((prevMessages) => [...prevMessages, newMessage]);
+  //   setInput('');
 
-    try {
-      const response = await axios.post('/api/get-response', { input, fileContent });
-      const botMessage = { text: response.data.message, isUser: false };
-      setMessages((prevMessages) => [...prevMessages, botMessage]);
-    } catch (error) {
-      console.error('Error with OpenAI API:', error);
-    }
-  };
+  //   try {
+  //     const response = await axios.post('/api/get-response', { input, fileContent });
+  //     const botMessage = { text: response.data.message, isUser: false };
+  //     setMessages((prevMessages) => [...prevMessages, botMessage]);
+  //   } catch (error) {
+  //     console.error('Error with OpenAI API:', error);
+  //   }
+  // };
 
   const returnfileUploadSuccess = () => fileUploadSuccess;
   const returnThreadNotifier = () => threadFinishNotifier;
   const imageSrcReturn = () => imageSrc;
   const returnProgress = () => progress;
-  const returnMsg = () => messages;
-  const returnInput = () => input;
+  // const returnMsg = () => messages;
+  // const returnInput = () => input;
 
   return {
+    
     handleFileChange,
     handleUpload,
-    handleChatSubmit,
+    // handleChatSubmit,
     returnProgress,
-    returnMsg,
+    // returnMsg,
     returnfileUploadSuccess,
     returnThreadNotifier,
     imageSrcReturn,
-    returnInput,
+    // returnInput,
+    imageSrcExport,
+    fileContentExporter,
   };
 };
+
+
 
 export default AssistantAPIKeyFunctions;

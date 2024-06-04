@@ -6,7 +6,7 @@ import storage from '../firebase.js';
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import ReactLoading from "react-loading";
 import ReactDOM from 'react-dom';
-import { handleFileChange, handleUpload, handleChatSubmit, returnProgress, returnMsg} from '../components/AssistantAPIKeyFunctions';
+// import { handleFileChange, handleUpload, handleChatSubmit, returnProgress, returnMsg} from '../components/AssistantAPIKeyFunctions';
 
 
 const PageContainer = styled.div`

@@ -156,9 +156,9 @@ const UploadPage = () => {
 
   const [msgStatus, setMsgStatus] = useState(null);
 
-  useEffect(() => {
-    setMsgStatus(returnMsg());
-  }, [returnMsg]);
+  // useEffect(() => {
+  //   setMsgStatus(returnMsg());
+  // }, [returnMsg]);
 
 
   const [threadNotifier, setThreadNotifier] = useState(false);

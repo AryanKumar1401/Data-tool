@@ -158,6 +158,27 @@ app.post('/api/create-thread', async (req, res) => {
   }
 });
 
+
+app.post('/api/get-response', async (req, res) => {
+  const { input, fileContentExporter } = req.body;
+  try {
+    // Here, call the OpenAI API using the input and fileContentExporter
+    // For example:
+    const response = await axios.post('https://api.openai.com/v1/your-endpoint', {
+      // Your payload
+    }, {
+      headers: {
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+      }
+    });
+    res.json({ message: response.data });
+  } catch (error) {
+    console.error('Error with OpenAI API:', error);
+    res.status(500).json({ error: 'An error occurred' });
+  }
+});
+
+
 app.post('/api/run-thread', async (req, res) => {
   try {
     const runId = await createRun();
