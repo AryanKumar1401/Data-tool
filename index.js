@@ -105,6 +105,165 @@ app.post('/api/create-assistant', async (req, res) => {
   }
 });
 
+//CLEANSER START
+
+let storedAssistantIdClean = null;
+app.post('/api/create-assistantClean', async (req, res) => {
+  const { fileId } = req.body;
+  try {
+    const assistant = await openai.beta.assistants.create({
+      name: "Data Cleanser",
+      description: "You are great at cleaning data. You analyze data present in .csv files, understand trends, missing values, and corrections to be made, and make necessary adjustments. You also share a brief text summary of the cleaning you have performed.",
+      model: "gpt-4o",
+      tools: [{ type: "code_interpreter" }],
+      tool_resources: {
+        "code_interpreter": {
+          "file_ids": [fileId],
+        },
+      },
+    });
+
+    console.log('Assistant created successfully:', assistant.id);
+    storedAssistantIdClean = assistant.id;
+
+    res.json({ id: assistant.id });
+  } catch (error) {
+    console.error('Error creating assistant:', error);
+    res.status(500).json({ message: 'Failed to create assistant.' });
+  }
+});
+
+let storedThreadIdClean = null;
+async function createThreadClean(fileId) {
+  try {
+    const thread = await openai.beta.threads.create({
+      messages: [
+        {
+          role: "user",
+          content: "Create a csv file that represents the updated version of the file with the necessary corrections made",
+          attachments: [{ file_id: fileId, tools: [{ type: "code_interpreter" }] }],
+        },
+      ],
+    });
+
+    storedThreadIdClean = thread.id;
+    console.log('Thread created successfully:', thread.id);
+
+    return storedThreadIdClean;
+  } catch (error) {
+    console.error('Error creating thread:', error);
+    throw new Error('Failed to create thread.');
+  }
+}
+
+
+let runIdToBeStoredClean = null;
+async function createRunClean() {
+  try {
+    const run = await openai.beta.threads.runs.createAndPoll(storedThreadIdClean, {
+      assistant_id: storedAssistantIdClean,
+      instructions: "Please create the csv."
+    });
+
+    runIdToBeStoredClean = run.id;
+    console.log("Run created successfully:", runIdToBeStoredClean);
+    return runIdToBeStoredClean;
+  } catch (error) {
+    console.error("Error:", error);
+    throw new Error('Failed to create run.');
+  }
+}
+
+
+app.post('/api/create-threadClean', async (req, res) => {
+  const { fileId } = req.body;
+  try {
+    const threadId = await createThreadClean(fileId);
+    res.json({ id: threadId });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ message: error.message });
+  }
+});
+
+app.post('/api/get-responseClean', async (req, res) => {
+  try {
+    const messages = await openai.beta.threads.messages.list(storedThreadIdClean);
+    res.json({ messages: messages.data });
+  } catch (error) {
+    console.error('Error with OpenAI API:', error);
+    res.status(500).json({ error: 'An error occurred' });
+  }
+});
+
+app.post('/api/run-threadClean', async (req, res) => {
+  try {
+    const runId = await createRunClean();
+    if (!runIdToBeStoredClean) {
+      throw new Error('No run Id available to run.');
+    }
+
+    // Polling mechanism to see if runStatus is completed
+    let runStatus;
+    do {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      runStatus = await openai.beta.threads.runs.retrieve(storedThreadIdClean, runIdToBeStoredClean);
+      console.log('Thread status:', runStatus.status);
+      if (runStatus.status === "failed") break;
+    } while (runStatus.status !== "completed");
+
+    console.log('Thread completed successfully.');
+
+
+    if (runStatus.status === "failed") storedThreadIdClean = "thread_8UAyMMasmkr8vArfjvtibres";
+
+    const messages = await openai.beta.threads.messages.list(storedThreadIdClean);
+
+    //display thread messages 
+    for (var i = 0; i < messages.data.length; i++) {
+      console.log("Message", i, " ", messages.data[i].content[0]);
+    }
+
+    //THIS NEEDS TO BE CHECKED ONWARD
+
+    
+    const imageId = messages.data[0].content[0].image_file.file_id;
+    console.log("image id", imageId);
+    const viz = await openai.files.content(imageId);
+    console.log(viz.headers);
+    const bufferView = new Uint8Array(await viz.arrayBuffer());
+    const imagePath = `./public/visualizations/${imageId}.csv`;
+    fs.writeFileSync(imagePath, bufferView);
+    console.log("the image is saved");
+
+    // Upload the file to Firebase Storage
+    await bucket.upload(imagePath, {
+      destination: `visualizations/${imageId}.csv`,
+      metadata: {
+        contentType: 'image/png', //CHECK
+      },
+    });
+
+    // Get the public URL of the uploaded file
+    const file = bucket.file(`visualizations/${imageId}.csv`);
+    const [url] = await file.getSignedUrl({
+      action: 'read',
+      expires: '03-01-2500', // Set a far future expiration date
+    });
+
+    console.log('File uploaded to Firebase and accessible at:', url);
+
+    res.json({ imageUrl: url, messages: messages.data, fileContent: viz });
+
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
+//CLEANSER END
+
 let storedThreadId = null;
 
 async function createThread(fileId) {
@@ -196,6 +355,8 @@ app.post('/api/run-thread', async (req, res) => {
     for (var i = 0; i < messages.data.length; i++) {
       console.log("Message", i, " ", messages.data[i].content[0]);
     }
+
+    
     const imageId = messages.data[0].content[0].image_file.file_id;
     console.log("image id", imageId);
     const viz = await openai.files.content(imageId);

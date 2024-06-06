@@ -9,6 +9,8 @@ import SignIn from './components/signIn';
 import { signOut } from 'firebase/auth';
 import { auth } from './firebase';
 import { Helmet } from 'react-helmet';
+import VizualizeOrClean from './pages/VizualizeOrClean';
+import UploadPageCleanse from './pages/UploadPageCleanse';
 
 function App() {
   const [showAuth, setShowAuth] = useState(false);
@@ -71,6 +73,8 @@ function App() {
             <Route path="/about" element={<AboutPage />} />
             <Route path="/upload" element={<UploadPage />} />
             <Route path="/pricing" element={<PricingPage />} />
+            <Route path = "/viz" element = {<VizualizeOrClean />} /> 
+            <Route path = "/cleanse" element = {<UploadPageCleanse />} /> 
           </Routes>
           {showAuth && (
             <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
