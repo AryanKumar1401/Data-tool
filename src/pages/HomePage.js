@@ -35,7 +35,7 @@ const PageContainer = styled.div`
 `;
 
 const SubHeader = styled.div`
-  display: flex;
+  
   justify-content: center;
   margin: 20px 0;
   font-size: 2em;
@@ -66,7 +66,7 @@ const HomePage = () => {
 
   // Function to handle button click and navigate to another route
   const navigateToExplore = () => {
-    navigate('/explore');
+    navigate('/upload');
   };
 
   return (

@@ -140,7 +140,7 @@ async function createThreadClean(fileId) {
       messages: [
         {
           role: "user",
-          content: "Create a csv file that represents the updated version of the file with the necessary corrections made",
+          content: "Create a csv file that adds an extra row of random numbers. Return the csv file with a link to download it",
           attachments: [{ file_id: fileId, tools: [{ type: "code_interpreter" }] }],
         },
       ],
@@ -209,25 +209,29 @@ app.post('/api/run-threadClean', async (req, res) => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       runStatus = await openai.beta.threads.runs.retrieve(storedThreadIdClean, runIdToBeStoredClean);
       console.log('Thread status:', runStatus.status);
-      if (runStatus.status === "failed") break;
+      // if (runStatus.status === "failed") break;
     } while (runStatus.status !== "completed");
 
     console.log('Thread completed successfully.');
 
 
-    if (runStatus.status === "failed") storedThreadIdClean = "thread_8UAyMMasmkr8vArfjvtibres";
+    // if (runStatus.status === "failed") storedThreadIdClean = "thread_8UAyMMasmkr8vArfjvtibres";
 
     const messages = await openai.beta.threads.messages.list(storedThreadIdClean);
 
     //display thread messages 
     for (var i = 0; i < messages.data.length; i++) {
-      console.log("Message", i, " ", messages.data[i].content[0]);
+      // console.log("Message", i, " ", messages.data[i].content[0]);
+      console.log("Message", i, " ", messages.data[i].content[0]); //.image_file.file_id
     }
 
     //THIS NEEDS TO BE CHECKED ONWARD
 
-    
-    const imageId = messages.data[0].content[0].image_file.file_id;
+    const imageId = messages.data[0].content[0]; //.image_file.file_id
+
+    console.log("DA IMAGEID IS: ", imageId);
+
+    // const imageId = messages.data[0].content[0].image_file.fileId;
     console.log("image id", imageId);
     const viz = await openai.files.content(imageId);
     console.log(viz.headers);
@@ -240,7 +244,7 @@ app.post('/api/run-threadClean', async (req, res) => {
     await bucket.upload(imagePath, {
       destination: `visualizations/${imageId}.csv`,
       metadata: {
-        contentType: 'image/png', //CHECK
+        // contentType: 'image/png', //CHECK
       },
     });
 
@@ -341,13 +345,13 @@ app.post('/api/run-thread', async (req, res) => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       runStatus = await openai.beta.threads.runs.retrieve(storedThreadId, runIdToBeStored);
       console.log('Thread status:', runStatus.status);
-      if (runStatus.status === "failed") break;
+      // if (runStatus.status === "failed") break;
     } while (runStatus.status !== "completed");
 
     console.log('Thread completed successfully.');
 
 
-    if (runStatus.status === "failed") storedThreadId = "thread_8UAyMMasmkr8vArfjvtibres";
+    // if (runStatus.status === "failed") storedThreadId = "thread_8UAyMMasmkr8vArfjvtibres";
 
     const messages = await openai.beta.threads.messages.list(storedThreadId);
 
