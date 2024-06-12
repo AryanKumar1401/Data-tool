@@ -29,7 +29,19 @@ const UploadPageAfterLoadingVisualization = () => {
     fileContentExporter,
   } = AssistantAPIKeyFunctions();
 
+  let flag = 0;
+
   const handleChatSubmit = async () => {
+    if(flag == 0) {
+      const response = await axios.post('/api/get-response');
+      const botMessages = response.data.messages.map(message => ({
+        text: message.content.find(content => content.type === 'text').text,
+        isUser: false,
+      }));
+      setMessages((prevMessages) => [...prevMessages, ...botMessages]);
+
+      flag = 1;
+    }
     if (!input.trim()) return;
 
     const newMessage = { text: input, isUser: true };
