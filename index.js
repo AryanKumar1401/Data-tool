@@ -113,7 +113,7 @@ app.post('/api/create-assistantClean', async (req, res) => {
   try {
     const assistant = await openai.beta.assistants.create({
       name: "Data Cleanser",
-      description: "You are great at cleaning data. You analyze data present in .csv files, understand trends, missing values, and corrections to be made, and make necessary adjustments. You also share a brief text summary of the cleaning you have performed.",
+      description: "You are great at cleaning data. You analyze data present in .csv files, understand trends, missing values, and corrections to be made, and make necessary adjustments. You also share a brief text summary of the cleaning you have performed. Your final output should be the file produced.",
       model: "gpt-4o",
       tools: [{ type: "code_interpreter" }],
       tool_resources: {
@@ -226,38 +226,43 @@ app.post('/api/run-threadClean', async (req, res) => {
     }
 
     //THIS NEEDS TO BE CHECKED ONWARD
+    const fileId = messages.data[0].content[0].text.annotations[0].file_path.file_id
 
-    const imageId = messages.data[0].content[0]; //.image_file.file_id
+    
+    console.log("Clean data File ID: ",fileId)
 
-    console.log("DA IMAGEID IS: ", imageId);
+    //const imageId = messages.data[0].content[0]; //.image_file.file_id
+
+    //console.log("DA IMAGEID IS: ", imageId);
 
     // const imageId = messages.data[0].content[0].image_file.fileId;
-    console.log("image id", imageId);
-    const viz = await openai.files.content(imageId);
-    console.log(viz.headers);
-    const bufferView = new Uint8Array(await viz.arrayBuffer());
-    const imagePath = `./public/visualizations/${imageId}.csv`;
-    fs.writeFileSync(imagePath, bufferView);
-    console.log("the image is saved");
+    //console.log("image id", imageId);
+    // const viz = await openai.files.content(imageId);
+    const cleanFile = await openai.files.content(fileId);
+    // console.log(viz.headers);
+    const bufferView = new Uint8Array(await cleanFile.arrayBuffer());
+    const cleanFilePath = `./public/clean/${fileId}.csv`;
+    fs.writeFileSync(cleanFilePath, bufferView);
+    console.log("the cleaned data is saved");
 
     // Upload the file to Firebase Storage
-    await bucket.upload(imagePath, {
-      destination: `visualizations/${imageId}.csv`,
-      metadata: {
-        // contentType: 'image/png', //CHECK
-      },
-    });
+    // await bucket.upload(imagePath, {
+    //   destination: `visualizations/${imageId}.csv`,
+    //   metadata: {
+    //     // contentType: 'image/png', //CHECK
+    //   },
+    // });
 
     // Get the public URL of the uploaded file
-    const file = bucket.file(`visualizations/${imageId}.csv`);
-    const [url] = await file.getSignedUrl({
-      action: 'read',
-      expires: '03-01-2500', // Set a far future expiration date
-    });
+    // const file = bucket.file(`visualizations/${imageId}.csv`);
+    // const [url] = await file.getSignedUrl({
+    //   action: 'read',
+    //   expires: '03-01-2500', // Set a far future expiration date
+    // });
 
-    console.log('File uploaded to Firebase and accessible at:', url);
+    // console.log('File uploaded to Firebase and accessible at:', url);
 
-    res.json({ imageUrl: url, messages: messages.data, fileContent: viz });
+    res.json({  });
 
   } catch (error) {
     console.error('Error:', error);
