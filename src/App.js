@@ -44,7 +44,7 @@ function App() {
           <nav className="flex space-x-4">
             <Link to="/" className="text-white font-bold text-lg hover:bg-white hover:rounded-md hover:text-black hover:shadow px-3 py-2">Main</Link>
             <Link to="/about" className="text-white font-bold text-lg hover:bg-white hover:rounded-md hover:text-black hover:shadow px-3 py-2">About</Link>
-            <Link to="/upload" className="text-white font-bold text-lg hover:bg-white hover:rounded-md hover:text-black hover:shadow px-3 py-2">Explore</Link>
+            <Link to="/viz" className="text-white font-bold text-lg hover:bg-white hover:rounded-md hover:text-black hover:shadow px-3 py-2">Explore</Link>
             <Link to="/pricing" className="text-white font-bold text-lg hover:bg-white hover:rounded-md hover:text-black hover:shadow px-3 py-2">Pricing</Link>
             <Link to="/contact" className="text-white font-bold text-lg hover:bg-white hover:rounded-md hover:text-black hover:shadow px-3 py-2">Contact</Link>
           </nav>
@@ -75,6 +75,7 @@ function App() {
             <Route path="/pricing" element={<PricingPage />} />
             <Route path = "/viz" element = {<VizualizeOrClean />} /> 
             <Route path = "/cleanse" element = {<UploadPageCleanse />} /> 
+            
           </Routes>
           {showAuth && (
             <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">

@@ -44,6 +44,11 @@ const UploadPageCleanse = () => {
         reader.readAsText(selectedFile);
       };
 
+     
+
+
+      const [uploadFlag, setUploadFlag] = useState(false);
+
 
       const handleUpload = async () => {
         if (!file) {
@@ -68,6 +73,8 @@ const UploadPageCleanse = () => {
     
           const fileId = response.data.fileId;
           console.log('File uploaded with ID:', fileId);
+          
+          setUploadFlag(true)
     
           setFileUploadSuccess(true);
     
@@ -139,15 +146,28 @@ const UploadPageCleanse = () => {
     setimgSRCReturnLocal(imageSrcReturn());
   }, [imageSrcReturn]);
 
-  return(<PageContainer>
+
+  const renderContentCleanse = () => {
+    if(uploadFlag) {
+      return <UploadPageAfterUploading />
+    } else {
+      return (
+        <PageContainer>
     <FileUpload
       handleFileChange={handleFileChange}
       handleUpload={handleUpload}
       progress={progressStatus}
       msg={msgStatus}
     />
-  </PageContainer>)
+  </PageContainer>
+      )
+    }
+  }
+
+  return(
     
+   <div>{renderContentCleanse()}</div>
+  )  
 }
 
 

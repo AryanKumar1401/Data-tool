@@ -29,9 +29,14 @@ const VizualizeOrClean = () => {
 
 
   const navigate = useNavigate();
+  const navigate2 = useNavigate();
 
   const gotToNewPage=()=>{
     navigate("/upload");
+  }
+
+  const goToNewPage2 = () => {
+    navigate2("/cleanse")
   }
     return (
 
@@ -44,7 +49,7 @@ const VizualizeOrClean = () => {
       
 
         <ButtonToolbar size='lg' className='mb-2'>
-            <Button variant='dark' size='lg'>Clean your dataset</Button>
+            <Button variant='dark' size='lg' onClick={() => goToNewPage2()}>Clean your dataset</Button>
             <Button variant='dark' size='lg' onClick={() => gotToNewPage()}>Visualize your dataset</Button>
         </ButtonToolbar>
        

@@ -33,7 +33,7 @@ return(
   <PageContainer>
     <innerDiv>
     <ReactLoading center type='cylon' color = '#0000FF' />
-    <h1>Your Visualization is Generating. Sit Tight!</h1>
+    <h1>Your File is Being Processed. Sit Tight!</h1>
     </innerDiv>
      
     

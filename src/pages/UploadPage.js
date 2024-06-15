@@ -182,6 +182,7 @@ const UploadPage = () => {
       return <UploadPageAfterLoadingVisualization />;
     } else {
       return (
+        
         <PageContainer>
           <FileUpload
             handleFileChange={handleFileChange}
