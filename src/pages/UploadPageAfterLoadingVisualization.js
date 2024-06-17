@@ -1,8 +1,8 @@
-import AssistantAPIKeyFunctions from '../components/AssistantAPIKeyFunctions';
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import ChatBox from '../components/ChatBox';
 import axios from 'axios';
+import AssistantAPIKeyFunctions from '../components/AssistantAPIKeyFunctions';
 
 const PageContainer = styled.div`
   display: flex;
@@ -12,7 +12,7 @@ const PageContainer = styled.div`
   background-color: #f0f0f0;
 `;
 
-const UploadPageAfterLoadingVisualization = () => {
+const UploadPageAfterLoadingVisualization = ({ fileUrl }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
 
@@ -25,6 +25,8 @@ const UploadPageAfterLoadingVisualization = () => {
     returnThreadNotifier,
     imageSrcExport,
     imageSrcReturn,
+    cleanFileUrlExport,
+    cleanFileUrlReturn,
     returnInput,
     fileContentExporter,
   } = AssistantAPIKeyFunctions();
@@ -32,14 +34,13 @@ const UploadPageAfterLoadingVisualization = () => {
   let flag = 0;
 
   const handleChatSubmit = async () => {
-    if(flag == 0) {
+    if (flag === 0) {
       const response = await axios.post('/api/get-response');
       const botMessages = response.data.messages.map(message => ({
         text: message.content.find(content => content.type === 'text').text,
         isUser: false,
       }));
       setMessages((prevMessages) => [...prevMessages, ...botMessages]);
-
       flag = 1;
     }
     if (!input.trim()) return;
@@ -66,11 +67,7 @@ const UploadPageAfterLoadingVisualization = () => {
   const [threadNotifier, setThreadNotifier] = useState(false);
   const [imgSRCReturnLocal, setimgSRCReturnLocal] = useState(null);
   const [msgReturnLocal, setMsgReturnLocal] = useState([]);
-
-  // useEffect(() => {
-  //   const input = returnInput();
-  //   setInputReturnLocal(input);
-  // }, []);
+  const [cleanFileUrlLocal, setCleanFileUrlLocal] = useState(null);
 
   useEffect(() => {
     const notifier = returnThreadNotifier();
@@ -82,6 +79,10 @@ const UploadPageAfterLoadingVisualization = () => {
     setimgSRCReturnLocal(imgSrc);
   }, []);
 
+  useEffect(() => {
+    const cleanFileUrl = cleanFileUrlReturn();
+    setCleanFileUrlLocal(cleanFileUrl);
+  }, []);
 
   return (
     <PageContainer>
@@ -92,12 +93,18 @@ const UploadPageAfterLoadingVisualization = () => {
         handleChatSubmit={handleChatSubmit}
       />
       <div className="flex flex-col items-center w-1/3 ml-5 bg-white p-5 border border-gray-300 h-4/5 overflow-y-auto">
+      {
+        imageSrcExport && <img src={imageSrcExport} alt="Uploaded Visualization" />
+      }
         <img src={imageSrcExport} alt="Uploaded Visualization" />
+        {fileUrl && (
+          <a href={fileUrl} download>
+            Download Cleaned File
+          </a>
+        )}
       </div>
     </PageContainer>
   );
 };
 
 export default UploadPageAfterLoadingVisualization;
-
-
