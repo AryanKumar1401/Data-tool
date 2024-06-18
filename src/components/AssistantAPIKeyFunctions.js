@@ -63,18 +63,12 @@ const AssistantAPIKeyFunctions = () => {
       console.log('Messages:', messages);
       console.log('file content: ', fileContent);
       setImageSrc(imageUrl); // Update state with the image src
-      imageSrcExport = imageUrl;
-
-      // Check if the assistant is for cleaning and handle accordingly
-      const responseClean = await axios.post('/api/run-threadClean');
-      const { fileUrl: cleanFileUrl } = responseClean.data;
-      setCleanFileUrl(cleanFileUrl);
-      cleanFileUrlExport = cleanFileUrl;
-      setThreadFinishNotifier(true);
+      imageSrcExport = imageUrl;      
     } catch (error) {
       console.error('Error uploading file:', error);
     }
   };
+
 
   const returnfileUploadSuccess = () => fileUploadSuccess;
   const returnThreadNotifier = () => threadFinishNotifier;
@@ -93,6 +87,7 @@ const AssistantAPIKeyFunctions = () => {
     imageSrcExport,
     fileContentExporter,
     cleanFileUrlExport,
+    
   };
 };
 

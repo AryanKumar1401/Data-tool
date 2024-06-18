@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import ChatBox from '../components/ChatBox';
 import axios from 'axios';
 import AssistantAPIKeyFunctions from '../components/AssistantAPIKeyFunctions';
+import { fileContentExporter, imageSrcExport } from './UploadPage';
 
 const PageContainer = styled.div`
   display: flex;
@@ -30,6 +31,7 @@ const UploadPageAfterLoadingVisualization = ({ fileUrl }) => {
     returnInput,
     fileContentExporter,
   } = AssistantAPIKeyFunctions();
+
 
   let flag = 0;
 
@@ -97,11 +99,6 @@ const UploadPageAfterLoadingVisualization = ({ fileUrl }) => {
         imageSrcExport && <img src={imageSrcExport} alt="Uploaded Visualization" />
       }
         <img src={imageSrcExport} alt="Uploaded Visualization" />
-        {fileUrl && (
-          <a href={fileUrl} download>
-            Download Cleaned File
-          </a>
-        )}
       </div>
     </PageContainer>
   );
