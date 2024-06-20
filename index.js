@@ -390,13 +390,13 @@ app.post('/api/run-thread', async (req, res) => {
      await new Promise((resolve) => setTimeout(resolve, 2000));
      runStatus = await openai.beta.threads.runs.retrieve(storedThreadId, runIdToBeStored);
      console.log('Thread status:', runStatus.status);
-     if (runStatus.status === "failed") break;
+     //if (runStatus.status === "failed") break;
    } while (runStatus.status !== "completed");
 
 
    console.log('Thread completed successfully.');
 
-    if (runStatus.status === "failed") storedThreadId = "thread_RBtWGbi8B0fNu6gVCREGTp4o";
+    //if (runStatus.status === "failed") storedThreadId = "thread_RBtWGbi8B0fNu6gVCREGTp4o";
 
   messages = await openai.beta.threads.messages.list(storedThreadId);
 
@@ -453,7 +453,7 @@ app.post('/api/get-initial-response', async (req, res) => {
       storedThreadId,
       {
         role: "user",
-        content: `Please provide a summary of the data in the file: ${fileId}.`
+        content: `Say "Hello, I'm your personal Data Tool! I can provide you with statistics, summaries, and insights into the provided data."`
       }
     );
 
@@ -467,12 +467,12 @@ app.post('/api/get-initial-response', async (req, res) => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       runStatus = await openai.beta.threads.runs.retrieve(storedThreadId, run1.id);
       console.log('Thread status:', runStatus.status);
-      if (runStatus.status === "failed") break;
+      //if (runStatus.status === "failed") break;
 
     } while (runStatus.status !== "completed");
     console.log('Run completed successfully.');
 
-    if (runStatus.status === "failed") storedThreadId = "thread_RBtWGbi8B0fNu6gVCREGTp4o";
+    //if (runStatus.status === "failed") storedThreadId = "thread_RBtWGbi8B0fNu6gVCREGTp4o";
 
 
     messages = await openai.beta.threads.messages.list(
@@ -511,12 +511,12 @@ app.post('/api/send-message', async (req, res) => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       runStatus = await openai.beta.threads.runs.retrieve(storedThreadId, run2.id);
       console.log('Thread status:', runStatus.status);
-      if (runStatus.status === "failed") break;
+      //if (runStatus.status === "failed") break;
 
     } while (runStatus.status !== "completed");
     console.log('Run completed successfully.');
 
-    if (runStatus.status === "failed") storedThreadId = "thread_RBtWGbi8B0fNu6gVCREGTp4o";
+    //if (runStatus.status === "failed") storedThreadId = "thread_RBtWGbi8B0fNu6gVCREGTp4o";
 
 
     messages = await openai.beta.threads.messages.list(
