@@ -230,26 +230,26 @@ app.post('/api/get-responseClean', async (req, res) => {
 
 app.post('/api/run-threadClean', async (req, res) => {
  try {
-   //const runId = await createRunClean();
-  //  if (!runIdToBeStoredClean) {
-  //    throw new Error('No run Id available to run.');
-  //  }
+   const runId = await createRunClean();
+   if (!runIdToBeStoredClean) {
+     throw new Error('No run Id available to run.');
+   }
 
 
    // Polling mechanism to see if runStatus is completed
    let runStatus;
-  //  do {
-  //    await new Promise((resolve) => setTimeout(resolve, 2000));
-  //    runStatus = await openai.beta.threads.runs.retrieve(storedThreadIdClean, runIdToBeStoredClean);
-  //    console.log('Thread status:', runStatus.status);
-  //    // if (runStatus.status === "failed") break;
-  //  } while (runStatus.status !== "completed");
+   do {
+     await new Promise((resolve) => setTimeout(resolve, 2000));
+     runStatus = await openai.beta.threads.runs.retrieve(storedThreadIdClean, runIdToBeStoredClean);
+     console.log('Thread status:', runStatus.status);
+     // if (runStatus.status === "failed") break;
+   } while (runStatus.status !== "completed");
 
 
    console.log('Thread completed successfully.');
 
 
-   storedThreadIdClean = "thread_2UAAKr5wUzaur7HflxskE3Pg";
+  //  storedThreadIdClean = "thread_2UAAKr5wUzaur7HflxskE3Pg";
 
 
    const messages = await openai.beta.threads.messages.list(storedThreadIdClean);
