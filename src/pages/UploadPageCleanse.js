@@ -1,13 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import FileUpload from '../components/FileUpload';
-import ChatBox from '../components/ChatBox';
-import Papa from 'papaparse';
 import axios from 'axios';
 import UploadPageAfterUploading from './UploadPageAfterUploading';
-import AboutPage from './AboutPage';
 import UploadPageAfterLoadingVisualization from './UploadPageAfterLoadingVisualization';
-import AssistantAPIKeyFunctions from '../components/AssistantAPIKeyFunctions';
-import { Navigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 const PageContainer = styled.div`

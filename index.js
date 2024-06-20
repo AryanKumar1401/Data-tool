@@ -304,7 +304,7 @@ app.post('/api/run-threadClean', async (req, res) => {
 //CLEANSER END
 
 
-let storedThreadId = null;
+var storedThreadId = null;
 
 
 async function createThread(fileId) {
@@ -365,8 +365,6 @@ app.post('/api/create-thread', async (req, res) => {
 });
 
 
-
-
 app.post('/api/get-response', async (req, res) => {
  try {
    const messages = await openai.beta.threads.messages.list(storedThreadId);
@@ -377,7 +375,7 @@ app.post('/api/get-response', async (req, res) => {
  }
 });
 
-
+var messages;
 app.post('/api/run-thread', async (req, res) => {
  try {
    const runId = await createRun();
@@ -392,32 +390,28 @@ app.post('/api/run-thread', async (req, res) => {
      await new Promise((resolve) => setTimeout(resolve, 2000));
      runStatus = await openai.beta.threads.runs.retrieve(storedThreadId, runIdToBeStored);
      console.log('Thread status:', runStatus.status);
-     // if (runStatus.status === "failed") break;
+     //if (runStatus.status === "failed") break;
    } while (runStatus.status !== "completed");
 
 
    console.log('Thread completed successfully.');
 
+    //if (runStatus.status === "failed") storedThreadId = "thread_RBtWGbi8B0fNu6gVCREGTp4o";
 
-
-
-   // if (runStatus.status === "failed") storedThreadId = "thread_8UAyMMasmkr8vArfjvtibres";
-
-
-   const messages = await openai.beta.threads.messages.list(storedThreadId);
+  messages = await openai.beta.threads.messages.list(storedThreadId);
 
 
    //display thread messages
    for (var i = 0; i < messages.data.length; i++) {
      console.log("Message", i, " ", messages.data[i].content[0]);
+     if (messages.data[i].content[0].type == "image_file") {
+      imageId = messages.data[i].content[0].image_file.file_id;
+    }
    }
 
-
-  
-   const imageId = messages.data[0].content[0].image_file.file_id;
+   
    console.log("image id", imageId);
    const viz = await openai.files.content(imageId);
-   console.log(viz.headers);
    const bufferView = new Uint8Array(await viz.arrayBuffer());
    const imagePath = `./public/visualizations/${imageId}.png`;
    fs.writeFileSync(imagePath, bufferView);
@@ -440,9 +434,7 @@ app.post('/api/run-thread', async (req, res) => {
      expires: '03-01-2500', // Set a far future expiration date
    });
 
-
    console.log('File uploaded to Firebase and accessible at:', url);
-
 
    res.json({ imageUrl: url, messages: messages.data, fileContent: viz });
 
@@ -453,6 +445,91 @@ app.post('/api/run-thread', async (req, res) => {
  }
 });
 
+app.post('/api/get-initial-response', async (req, res) => {
+  const { fileId } = req.body;
+  try {
+    const response = await openai.beta.threads.messages.create(
+      storedThreadId,
+      {
+        role: "user",
+        content: `Say "Hello, I'm your personal Data Tool! I can provide you with statistics, summaries, and insights into the provided data."`
+      }
+    );
+
+    //create the run that responds as the first message
+    const run1 = await openai.beta.threads.runs.create(storedThreadId, {
+      assistant_id: storedAssistantId,
+    });
+    console.log("ChatBot run started")
+    var runStatus;
+    do {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      runStatus = await openai.beta.threads.runs.retrieve(storedThreadId, run1.id);
+      console.log('Thread status:', runStatus.status);
+      //if (runStatus.status === "failed") break;
+
+    } while (runStatus.status !== "completed");
+    console.log('Run completed successfully.');
+
+    //if (runStatus.status === "failed") storedThreadId = "thread_RBtWGbi8B0fNu6gVCREGTp4o";
+
+
+    messages = await openai.beta.threads.messages.list(
+      storedThreadId
+    );
+    for (var i = 0; i<messages.data.length; i++) {
+      console.log("Updated Message",i, " ",messages.data[i].content[0]);
+    }
+    res.json({ messages: messages.data, run_id: run1.id });
+  } catch (error) {
+    console.error('Error getting initial response:', error);
+    res.status(500).json({ message: 'Failed to get initial response.' });
+  }
+});
+
+app.post('/api/send-message', async (req, res) => {
+  const { message } = req.body;
+  try {
+    const response = await openai.beta.threads.messages.create(
+      storedThreadId,
+      {
+        role: "user",
+        content: message
+      }
+    );
+
+    //create the run that responds as the first message
+    const run2 = await openai.beta.threads.runs.create(storedThreadId, {
+      assistant_id: storedAssistantId,
+    });
+    console.log("ChatBot Response run started")
+    var runStatus;
+    do {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      runStatus = await openai.beta.threads.runs.retrieve(storedThreadId, run2.id);
+      console.log('Thread status:', runStatus.status);
+      //if (runStatus.status === "failed") break;
+
+    } while (runStatus.status !== "completed");
+    console.log('Run completed successfully.');
+
+    //if (runStatus.status === "failed") storedThreadId = "thread_RBtWGbi8B0fNu6gVCREGTp4o";
+
+
+    messages = await openai.beta.threads.messages.list(
+      storedThreadId
+    );
+    for (var i = 0; i<messages.data.length; i++) {
+      console.log("Updated Chat Message",i, " ",messages.data[i].content[0]);
+    }
+
+
+    res.json({ messages: messages.data, run_id: run2.id });
+  } catch (error) {
+    console.error('Error getting initial response:', error);
+    res.status(500).json({ message: 'Failed to get initial response.' });
+  }
+});
 
 
 

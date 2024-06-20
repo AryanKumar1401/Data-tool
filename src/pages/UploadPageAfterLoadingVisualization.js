@@ -95,10 +95,12 @@ const UploadPageAfterLoadingVisualization = ({ fileUrl }) => {
         handleChatSubmit={handleChatSubmit}
       />
       <div className="flex flex-col items-center w-1/3 ml-5 bg-white p-5 border border-gray-300 h-4/5 overflow-y-auto">
-      {
-        imageSrcExport && <img src={imageSrcExport} alt="Uploaded Visualization" />
-      }
-        <img src={imageSrcExport} alt="Uploaded Visualization" />
+      {imageSrcExport && <img src={imageSrcExport} alt="Uploaded Visualization" />}
+      {fileUrl && (
+        <a href={fileUrl} download className="mt-3 text-blue-500 hover:underline">
+          Download File
+        </a>
+      )}
       </div>
     </PageContainer>
   );
