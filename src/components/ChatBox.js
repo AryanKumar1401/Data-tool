@@ -45,7 +45,14 @@ const ChatBot = ({ fileId }) => {
     const fetchInitialMessage = async () => {
       try {
         const response = await axios.post('/api/get-initial-response', { fileId });
-        const botMessages = response.data.messages.map(message => ({
+        // const botMessages = response.data.messages.map(message => ({
+        //   text: message.content.find(content => content.type === 'text').text,
+        //   isUser: false,
+        // }));
+        const runId = response.data.run_id;
+        const botMessages = response.data.messages
+        .filter(message => message.role === "assistant" && message.run_id === runId)
+        .map(message => ({
           text: message.content.find(content => content.type === 'text').text,
           isUser: false,
         }));
@@ -62,13 +69,16 @@ const ChatBot = ({ fileId }) => {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    const newMessage = { text: input, sender: 'user' };
+    const newMessage = { text: input, isUser: true };
     setMessages([...messages, newMessage]);
     setInput('');
 
     try {
       const response = await axios.post('/api/send-message', { message: input });
-      const botMsgs = response.data.messages.map(message => ({
+      const runId = response.data.run_id;
+      const botMsgs = response.data.messages
+      .filter(message => message.role === "assistant" && message.run_id === runId)
+      .map(message => ({
         text: message.content.find(content => content.type === 'text').text,
         isUser: false,
       }));
@@ -85,7 +95,7 @@ const ChatBot = ({ fileId }) => {
       <div className="flex flex-col items-start w-full mt-5">
         {messages.map((msg, index) => (
           <div key={index} className={`p-2 rounded my-1 ${msg.isUser ? 'bg-blue-500 text-white self-end' : 'bg-gray-200 text-black self-start'}`}>
-            {msg.isUser && msg.text.value}
+            {msg.isUser && msg.text}
             {!msg.isUser && msg.text.value}
           </div>
         ))}

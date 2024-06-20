@@ -412,7 +412,6 @@ app.post('/api/run-thread', async (req, res) => {
    
    console.log("image id", imageId);
    const viz = await openai.files.content(imageId);
-   console.log(viz.headers);
    const bufferView = new Uint8Array(await viz.arrayBuffer());
    const imagePath = `./public/visualizations/${imageId}.png`;
    fs.writeFileSync(imagePath, bufferView);
@@ -481,9 +480,7 @@ app.post('/api/get-initial-response', async (req, res) => {
     for (var i = 0; i<messages.data.length; i++) {
       console.log("Updated Message",i, " ",messages.data[i].content[0]);
     }
-
-
-    res.json({ messages: messages.data });
+    res.json({ messages: messages.data, run_id: run1.id });
   } catch (error) {
     console.error('Error getting initial response:', error);
     res.status(500).json({ message: 'Failed to get initial response.' });
@@ -527,7 +524,7 @@ app.post('/api/send-message', async (req, res) => {
     }
 
 
-    res.json({ messages: messages.data });
+    res.json({ messages: messages.data, run_id: run2.id });
   } catch (error) {
     console.error('Error getting initial response:', error);
     res.status(500).json({ message: 'Failed to get initial response.' });
