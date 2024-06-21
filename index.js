@@ -37,17 +37,14 @@ const storage = multer.diskStorage({
  }
 });
 
-
 // Initialize upload variable
 const upload = multer({ storage: storage });
-
 
 // Ensure the uploads directory exists
 const uploadDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadDir)) {
  fs.mkdirSync(uploadDir);
 }
-
 
 // Ensure the downloads directory exists
 const downloadDir = path.join(__dirname, 'downloads');
@@ -92,6 +89,39 @@ app.post('/upload', upload.single('file'), async (req, res) => {
  }
 });
 
+/**
+ * Declare OpenAI variables.
+ */
+var storedAssistantId = null;
+var storedThreadId = null;
+let runIdToBeStoredClean = null;
+
+/**
+ * Helper functions 
+ */
+
+//polls the run status 
+async function pollRunStatus(threadId,runId) {
+  var runStatus;
+    do {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      runStatus = await openai.beta.threads.runs.retrieve(threadId, runId);
+      console.log('Thread status:', runStatus.status);
+      //if (runStatus.status === "failed") break;
+
+    } while (runStatus.status !== "completed");
+}
+
+//displays thread messages
+function displayThreadMessages(messages) {
+  for (let i = 0; i < messages.data.length; i++) {
+    console.log("Message", i, " ", messages.data[i].content[0]);
+  }
+}
+
+
+
+
 
 app.post('/api/create-assistant', async (req, res) => {
  const { fileId } = req.body;
@@ -120,7 +150,6 @@ app.post('/api/create-assistant', async (req, res) => {
 //CLEANSER START
 
 
-let storedAssistantId = null;
 app.post('/api/create-assistantClean', async (req, res) => {
  const { fileId } = req.body;
  try {
@@ -145,7 +174,6 @@ app.post('/api/create-assistantClean', async (req, res) => {
  }
 });
 
-
 async function createThreadClean(fileId) {
  try {
    const thread = await openai.beta.threads.create({
@@ -168,7 +196,6 @@ async function createThreadClean(fileId) {
  }
 }
 
-let runIdToBeStoredClean = null;
 async function createRunClean() {
  try {
    const run = await openai.beta.threads.runs.createAndPoll(storedThreadId, {
@@ -216,37 +243,17 @@ app.post('/api/run-threadClean', async (req, res) => {
      throw new Error('No run Id available to run.');
    }
 
-
    // Polling mechanism to see if runStatus is completed
-   let runStatus;
-   do {
-     await new Promise((resolve) => setTimeout(resolve, 2000));
-     runStatus = await openai.beta.threads.runs.retrieve(storedThreadId, runIdToBeStoredClean);
-     console.log('Thread status:', runStatus.status);
-     // if (runStatus.status === "failed") break;
-   } while (runStatus.status !== "completed");
-
+   await pollRunStatus(storedThreadId,runIdToBeStoredClean);
 
    console.log('Thread completed successfully.');
 
-
   //  storedThreadId = "thread_2UAAKr5wUzaur7HflxskE3Pg";
 
-
    const messages = await openai.beta.threads.messages.list(storedThreadId);
+   displayThreadMessages(messages);
+   const fileId = messages.data[0].content[0].text.annotations[0].file_path.file_id;
 
-
-   //display thread messages
-   for (var i = 0; i < messages.data.length; i++) {
-     // console.log("Message", i, " ", messages.data[i].content[0]);
-     console.log("Message", i, " ", messages.data[i].content[0]); //.image_file.file_id
-   }
-
-
-   const fileId = messages.data[0].content[0].text.annotations[0].file_path.file_id
-
-
-  
    console.log("Clean data File ID: ",fileId)
    const cleanFile = await openai.files.content(fileId);
    // console.log(viz.headers);
@@ -285,8 +292,6 @@ app.post('/api/run-threadClean', async (req, res) => {
 //CLEANSER END
 
 
-var storedThreadId = null;
-
 
 async function createThread(fileId) {
  try {
@@ -322,8 +327,6 @@ async function createRun() {
      assistant_id: storedAssistantId,
      instructions: "Please create the visualizations."
    });
-
-
    runIdToBeStored = run.id;
    console.log("Run created successfully:", runIdToBeStored);
    return runIdToBeStored;
@@ -366,23 +369,12 @@ app.post('/api/run-thread', async (req, res) => {
 
 
    // Polling mechanism to see if runStatus is completed
-   let runStatus;
-   do {
-     await new Promise((resolve) => setTimeout(resolve, 2000));
-     runStatus = await openai.beta.threads.runs.retrieve(storedThreadId, runIdToBeStored);
-     console.log('Thread status:', runStatus.status);
-     //if (runStatus.status === "failed") break;
-   } while (runStatus.status !== "completed");
+  await pollRunStatus(storedThreadId,runId);
 
-
-   console.log('Thread completed successfully.');
-
-    //if (runStatus.status === "failed") storedThreadId = "thread_RBtWGbi8B0fNu6gVCREGTp4o";
-
+  console.log('Thread completed successfully.');
   messages = await openai.beta.threads.messages.list(storedThreadId);
-
-
    //display thread messages
+
    for (var i = 0; i < messages.data.length; i++) {
      console.log("Message", i, " ", messages.data[i].content[0]);
      if (messages.data[i].content[0].type == "image_file") {
@@ -442,14 +434,7 @@ app.post('/api/get-initial-response', async (req, res) => {
       assistant_id: storedAssistantId,
     });
     console.log("ChatBot run started")
-    var runStatus;
-    do {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      runStatus = await openai.beta.threads.runs.retrieve(storedThreadId, run1.id);
-      console.log('Thread status:', runStatus.status);
-      //if (runStatus.status === "failed") break;
-
-    } while (runStatus.status !== "completed");
+    await pollRunStatus(storedThreadId,run1.id);
     console.log('Run completed successfully.');
 
     //if (runStatus.status === "failed") storedThreadId = "thread_RBtWGbi8B0fNu6gVCREGTp4o";
@@ -458,9 +443,7 @@ app.post('/api/get-initial-response', async (req, res) => {
     messages = await openai.beta.threads.messages.list(
       storedThreadId
     );
-    for (var i = 0; i<messages.data.length; i++) {
-      console.log("Updated Message",i, " ",messages.data[i].content[0]);
-    }
+    displayThreadMessages(messages);
     res.json({ messages: messages.data, run_id: run1.id });
   } catch (error) {
     console.error('Error getting initial response:', error);
@@ -483,15 +466,8 @@ app.post('/api/send-message', async (req, res) => {
     const run2 = await openai.beta.threads.runs.create(storedThreadId, {
       assistant_id: storedAssistantId,
     });
-    console.log("ChatBot Response run started")
-    var runStatus;
-    do {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      runStatus = await openai.beta.threads.runs.retrieve(storedThreadId, run2.id);
-      console.log('Thread status:', runStatus.status);
-      //if (runStatus.status === "failed") break;
-
-    } while (runStatus.status !== "completed");
+    console.log("ChatBot Response run started");
+    await pollRunStatus(storedThreadId,run2.id);
     console.log('Run completed successfully.');
 
     //if (runStatus.status === "failed") storedThreadId = "thread_RBtWGbi8B0fNu6gVCREGTp4o";
@@ -500,9 +476,7 @@ app.post('/api/send-message', async (req, res) => {
     messages = await openai.beta.threads.messages.list(
       storedThreadId
     );
-    for (var i = 0; i<messages.data.length; i++) {
-      console.log("Updated Chat Message",i, " ",messages.data[i].content[0]);
-    }
+    displayThreadMessages(messages);
 
 
     res.json({ messages: messages.data, run_id: run2.id });
@@ -511,7 +485,6 @@ app.post('/api/send-message', async (req, res) => {
     res.status(500).json({ message: 'Failed to get initial response.' });
   }
 });
-
 
 
 // Catch-all handler to serve the React app

@@ -12,6 +12,27 @@ const GlobalStyles = createGlobalStyle`
     background-color: #000;
     line-height: 1.6;
   }
+  .nav-link:hover {
+  color: black !important;
+}
 `;
 
 export default GlobalStyles;
+
+
+
+
+
+
+        
+
+
+        
+
+
+
+   
+
+
+
+        

@@ -3,39 +3,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
 
-const ChatContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  max-width: 600px;
-  margin: auto;
-  padding: 20px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-`;
-
-const ChatLog = styled.div`
-  flex-grow: 1;
-  overflow-y: auto;
-  margin-bottom: 20px;
-`;
-
-const Message = styled.div`
-  margin-bottom: 10px;
-  &.user {
-    text-align: right;
-  }
-  &.bot {
-    text-align: left;
-  }
-`;
-
-const ChatInput = styled.input`
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 100%;
-`;
 
 const ChatBot = ({ fileId }) => {
   const [messages, setMessages] = useState([]);

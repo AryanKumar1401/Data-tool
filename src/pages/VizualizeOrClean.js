@@ -1,16 +1,8 @@
-import AssistantAPIKeyFunctions from '../components/AssistantAPIKeyFunctions';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import ChatBox from '../components/ChatBox';
-import axios from 'axios';
 import Button from 'react-bootstrap/Button';
-import { ButtonGroup, ButtonToolbar } from 'react-bootstrap';
-import UploadPage from './UploadPage';
-
-
-
-
+import { ButtonToolbar } from 'react-bootstrap';
 
 const PageContainer = styled.div`
   display: flex;
@@ -20,53 +12,32 @@ const PageContainer = styled.div`
   background-color: #f0f0f0;
 `;
 
-const Content = styled.p`
-  color: #333;
+const StyledButton = styled(Button)`
+  margin: 0 20px; /* Adjust the margin value as needed */
 `;
 
-
 const VizualizeOrClean = () => {
-
-
   const navigate = useNavigate();
-  const navigate2 = useNavigate();
 
-  const gotToNewPage=()=>{
+  const gotToNewPage = () => {
     navigate("/upload");
-  }
+  };
 
   const goToNewPage2 = () => {
-    navigate2("/cleanse")
-  }
-    return (
+    navigate("/cleanse");
+  };
 
-        <PageContainer>
-            <div>
-            <h1>
-  What would you like to do today?
-</h1>
-
-      
-
+  return (
+    <PageContainer>
+      <div>
+        <h1>What would you like to do today?</h1>
         <ButtonToolbar size='lg' className='mb-2'>
-            <Button variant='dark' size='lg' onClick={() => goToNewPage2()}>Clean your dataset</Button>
-            <Button variant='dark' size='lg' onClick={() => gotToNewPage()}>Visualize your dataset</Button>
+          <StyledButton variant='dark' size='lg' onClick={goToNewPage2}>Clean your dataset</StyledButton>
+          <StyledButton variant='dark' size='lg' onClick={gotToNewPage}>Visualize your dataset</StyledButton>
         </ButtonToolbar>
-       
-            </div>
-      
+      </div>
     </PageContainer>
-    //     <PageContainer>
-    //     <h1>What Would You Like to Do?</h1>
-
-    //     <div></div>
-    // </PageContainer>
-
-    )
-
-   
-
-
-}
+  );
+};
 
 export default VizualizeOrClean;

@@ -42,11 +42,11 @@ function App() {
             <Link to="/"><h1 className="text-2xl font-bold text-white">DataTool</h1></Link>
           </div>
           <nav className="flex space-x-4">
-            <Link to="/" className="text-white font-bold text-lg hover:bg-white hover:rounded-md hover:text-black hover:shadow px-3 py-2">Main</Link>
-            <Link to="/about" className="text-white font-bold text-lg hover:bg-white hover:rounded-md hover:text-black hover:shadow px-3 py-2">About</Link>
-            <Link to="/viz" className="text-white font-bold text-lg hover:bg-white hover:rounded-md hover:text-black hover:shadow px-3 py-2">Explore</Link>
-            <Link to="/pricing" className="text-white font-bold text-lg hover:bg-white hover:rounded-md hover:text-black hover:shadow px-3 py-2">Pricing</Link>
-            <Link to="/contact" className="text-white font-bold text-lg hover:bg-white hover:rounded-md hover:text-black hover:shadow px-3 py-2">Contact</Link>
+          <Link to="/" className="nav-link text-white font-bold text-lg hover:bg-white hover:rounded-md hover:text-black hover:shadow px-3 py-2">Main</Link>
+          <Link to="/about" className="nav-link text-white font-bold text-lg hover:bg-white hover:rounded-md hover:text-black hover:shadow px-3 py-2">About</Link>
+          <Link to="/viz" className="nav-link text-white font-bold text-lg hover:bg-white hover:rounded-md hover:text-black hover:shadow px-3 py-2">Explore</Link>
+          <Link to="/pricing" className="nav-link text-white font-bold text-lg hover:bg-white hover:rounded-md hover:text-black hover:shadow px-3 py-2">Pricing</Link>
+          <Link to="/contact" className="nav-link text-white font-bold text-lg hover:bg-white hover:rounded-md hover:text-black hover:shadow px-3 py-2">Contact</Link>
           </nav>
           {user ? (
           
