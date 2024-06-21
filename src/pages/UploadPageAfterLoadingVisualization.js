@@ -65,10 +65,8 @@ const UploadPageAfterLoadingVisualization = ({ fileUrl }) => {
     }
   };
 
-  const [inputReturnLocal, setInputReturnLocal] = useState('');
   const [threadNotifier, setThreadNotifier] = useState(false);
   const [imgSRCReturnLocal, setimgSRCReturnLocal] = useState(null);
-  const [msgReturnLocal, setMsgReturnLocal] = useState([]);
   const [cleanFileUrlLocal, setCleanFileUrlLocal] = useState(null);
 
   useEffect(() => {

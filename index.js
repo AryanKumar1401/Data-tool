@@ -3,10 +3,8 @@ const path = require('path');
 const multer = require('multer');
 const OpenAI = require('openai');
 const fs = require('fs');
-const axios = require('axios');
 const bodyParser = require('body-parser');
 const admin = require('firebase-admin');
-const { useState } = require('react');
 const app = express();
 require('dotenv').config();
 
@@ -95,7 +93,6 @@ app.post('/upload', upload.single('file'), async (req, res) => {
 });
 
 
-let storedAssistantId = null;
 app.post('/api/create-assistant', async (req, res) => {
  const { fileId } = req.body;
  try {
@@ -110,12 +107,8 @@ app.post('/api/create-assistant', async (req, res) => {
        },
      },
    });
-
-
    console.log('Assistant created successfully:', assistant.id);
    storedAssistantId = assistant.id;
-
-
    res.json({ id: assistant.id });
  } catch (error) {
    console.error('Error creating assistant:', error);
@@ -127,7 +120,7 @@ app.post('/api/create-assistant', async (req, res) => {
 //CLEANSER START
 
 
-let storedAssistantIdClean = null;
+let storedAssistantId = null;
 app.post('/api/create-assistantClean', async (req, res) => {
  const { fileId } = req.body;
  try {
@@ -143,11 +136,8 @@ app.post('/api/create-assistantClean', async (req, res) => {
      },
    });
 
-
    console.log('Assistant created successfully:', assistant.id);
-   storedAssistantIdClean = assistant.id;
-
-
+   storedAssistantId = assistant.id;
    res.json({ id: assistant.id });
  } catch (error) {
    console.error('Error creating assistant:', error);
@@ -156,7 +146,6 @@ app.post('/api/create-assistantClean', async (req, res) => {
 });
 
 
-let storedThreadIdClean = null;
 async function createThreadClean(fileId) {
  try {
    const thread = await openai.beta.threads.create({
@@ -170,25 +159,20 @@ async function createThreadClean(fileId) {
    });
 
 
-   storedThreadIdClean = thread.id;
+   storedThreadId = thread.id;
    console.log('Thread created successfully:', thread.id);
-
-
-   return storedThreadIdClean;
+   return storedThreadId;
  } catch (error) {
    console.error('Error creating thread:', error);
    throw new Error('Failed to create thread.');
  }
 }
 
-
-
-
 let runIdToBeStoredClean = null;
 async function createRunClean() {
  try {
-   const run = await openai.beta.threads.runs.createAndPoll(storedThreadIdClean, {
-     assistant_id: storedAssistantIdClean,
+   const run = await openai.beta.threads.runs.createAndPoll(storedThreadId, {
+     assistant_id: storedAssistantId,
      instructions: "Please create the csv."
    });
 
@@ -201,9 +185,6 @@ async function createRunClean() {
    throw new Error('Failed to create run.');
  }
 }
-
-
-
 
 app.post('/api/create-threadClean', async (req, res) => {
  const { fileId } = req.body;
@@ -219,7 +200,7 @@ app.post('/api/create-threadClean', async (req, res) => {
 
 app.post('/api/get-responseClean', async (req, res) => {
  try {
-   const messages = await openai.beta.threads.messages.list(storedThreadIdClean);
+   const messages = await openai.beta.threads.messages.list(storedThreadId);
    res.json({ messages: messages.data });
  } catch (error) {
    console.error('Error with OpenAI API:', error);
@@ -240,7 +221,7 @@ app.post('/api/run-threadClean', async (req, res) => {
    let runStatus;
    do {
      await new Promise((resolve) => setTimeout(resolve, 2000));
-     runStatus = await openai.beta.threads.runs.retrieve(storedThreadIdClean, runIdToBeStoredClean);
+     runStatus = await openai.beta.threads.runs.retrieve(storedThreadId, runIdToBeStoredClean);
      console.log('Thread status:', runStatus.status);
      // if (runStatus.status === "failed") break;
    } while (runStatus.status !== "completed");
@@ -249,10 +230,10 @@ app.post('/api/run-threadClean', async (req, res) => {
    console.log('Thread completed successfully.');
 
 
-  //  storedThreadIdClean = "thread_2UAAKr5wUzaur7HflxskE3Pg";
+  //  storedThreadId = "thread_2UAAKr5wUzaur7HflxskE3Pg";
 
 
-   const messages = await openai.beta.threads.messages.list(storedThreadIdClean);
+   const messages = await openai.beta.threads.messages.list(storedThreadId);
 
 
    //display thread messages
