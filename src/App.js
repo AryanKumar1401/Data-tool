@@ -36,7 +36,7 @@ function App() {
       </Helmet>
       <GlobalStyles />
       <div className="flex flex-col min-h-screen">
-        <header className="bg-black fixed top-2 left-2 right-2 p-4 rounded-lg shadow-lg flex justify-between items-center z-50">
+        <header className="bg-black fixed top-0 left-0 w-full p-4 rounded-lg shadow-lg flex justify-between items-center z-50">
           <div className="flex items-center">
             <div className="w-10 h-10 bg-center bg-no-repeat bg-contain mr-3" style={{ backgroundImage: `url('https://img.icons8.com/?size=100&id=69617&format=png&color=FFFFFF')` }}></div>
             <Link to="/"><h1 className="text-2xl font-bold text-white">DataTool</h1></Link>
