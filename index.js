@@ -180,7 +180,7 @@ async function createThreadClean(fileId) {
      messages: [
        {
          role: "user",
-         content: "Create a csv file that adds an extra row of random numbers. Return the csv file with a link to download it",
+         content: "Create a csv file that cleanses the data the user has uploaded. This can be removing null values, removing irrelevant data, deduplicating the data, filtering out data outliers.",
          attachments: [{ file_id: fileId, tools: [{ type: "code_interpreter" }] }],
        },
      ],
@@ -299,7 +299,7 @@ async function createThread(fileId) {
      messages: [
        {
          role: "user",
-         content: "create a line graph for this file. Use your best intuition for what the columns and the corresponding data should be, but you must return a line graph.",
+         content: "create a graph for this file. Use your best intuition for what the columns and the corresponding data should be as well as what type of graph it should be.",
          attachments: [{ file_id: fileId, tools: [{ type: "code_interpreter" }] }],
        },
      ],
