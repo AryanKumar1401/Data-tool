@@ -26,6 +26,7 @@
     "react-router-dom": "^6.23.0",
     "react-scripts": "5.0.1",
     "sharp": "^0.33.4",
+    "homepage":"https://aryankumar1401.github.io/Data-tool",
     "styled-components": "^6.1.9",
     "web-vitals": "^2.1.4"
   },
