@@ -1,9 +1,73 @@
-import React from 'react';
+import {React, Fragment, useState} from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import CarouselPage from '../components/Carousel.js';
 
+
+
+
+//Functions
+
+const ScrollButton = () => {
+ 
+  const [visible, setVisible] = useState(true)
+
+  const toggleVisible = () => {
+      const scrolled = document.documentElement.scrollTop;
+      if (scrolled > 0) {
+          setVisible(false)
+      }
+      else if (scrolled <= 0) {
+          setVisible(true)
+      }
+  };
+
+  const scrollToBottom = () => {
+      window.scrollTo({
+          top: document.documentElement.scrollHeight,
+          behavior: 'auto'
+          /* you can also use 'auto' behaviour 
+             in place of 'smooth' */
+      });
+  };
+
+  window.addEventListener('scroll', toggleVisible);
+
+  return (
+      <Button>
+       <FontAwesomeIcon icon="fa-solid fa-arrow-down" onClick = {scrollToBottom} />
+      </Button>
+  );
+}
+
+
 // Styled button component
+
+
+const Header = styled.h1` 
+   text-align: center; 
+   left: 50%;
+   color: green; 
+`;
+ 
+const Content = styled.div` 
+   overflowY: scroll; 
+   height: 2500px; 
+`;
+ 
+const Button = styled.div` 
+   position: fixed;  
+   width: 100%; 
+   left: 50%; 
+   height: 20px; 
+   font-size: 3rem; 
+   z-index: 1; 
+   cursor: pointer; 
+   color: green; 
+
+`
+
+
 const MainButtonRock = styled.button`
   color: white;
   border: none;
@@ -46,6 +110,12 @@ const SubHeader = styled.div`
   }
 `;
 
+
+const YourPersonal = styled.div `
+  font-size: 1.5em;
+  font-weight: bold;
+`
+
 const Section = styled.section`
   margin: 50px 0;
 
@@ -61,6 +131,10 @@ const Section = styled.section`
   }
 `;
 
+const HorizontalContainer = styled.div `
+  display: flex;
+`
+
 const HomePage = () => {
   const navigate = useNavigate();
 
@@ -72,9 +146,21 @@ const HomePage = () => {
   return (
     <PageContainer>
       <SubHeader>
-        <div>Your Personal</div>
+        <YourPersonal>Your Personal</YourPersonal>
         <CarouselPage />
       </SubHeader>
+
+      <Fragment>
+            <Header>GeeksForGeeks Scroll To Bottom</Header>
+            <ScrollButton />
+            <Content />
+            <Header>Thanks for visiting</Header>
+        </Fragment>
+
+
+
+
+
       <Section>
         <h2>What we do</h2>
         <p>DataTool takes your dataset and cleanses and analyzes it to return stunning visualizations.</p>

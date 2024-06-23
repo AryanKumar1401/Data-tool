@@ -18,13 +18,13 @@ const CarouselPage = () => {
       className='CarouselMainPage'
     >
       <div className="carousel-slide">
-        <h4>Data Cleanser</h4>
+        <h4 style={{fontSize: "1em"}}>Data Cleanser</h4>
       </div>
       <div className="carousel-slide">
-        <h4>Data Analyzer</h4>
+        <h4 style={{fontSize: "1em"}}>Data Analyzer</h4>
       </div>
       <div className="carousel-slide">
-        <h4>Data Visualizer</h4>
+        <h4 style={{fontSize: "1em"}}>Data Visualizer</h4>
       </div>
     </Carousel>
   );
