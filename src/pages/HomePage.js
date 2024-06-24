@@ -2,9 +2,9 @@ import {React, Fragment, useState} from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import CarouselPage from '../components/Carousel.js';
-
-
-
+import WordPullUp from '../components/magicui/WordPullup.tsx';
+import ShimmerButton from '../components/magicui/shiny-button.tsx';
+import ShinyButton from '../components/magicui/shiny-button.tsx';
 
 //Functions
 
@@ -34,8 +34,8 @@ const ScrollButton = () => {
   window.addEventListener('scroll', toggleVisible);
 
   return (
-      <Button>
-       <FontAwesomeIcon icon="fa-solid fa-arrow-down" onClick = {scrollToBottom} />
+      <Button onClick = {scrollToBottom}>
+    
       </Button>
   );
 }
@@ -146,7 +146,7 @@ const HomePage = () => {
   return (
     <PageContainer>
       <SubHeader>
-        <YourPersonal>Your Personal</YourPersonal>
+       <WordPullUp words='Your Personal'></WordPullUp>
         <CarouselPage />
       </SubHeader>
 
@@ -169,6 +169,7 @@ const HomePage = () => {
         </p>
       
         <MainButtonRock onClick={navigateToExplore}>Ready to Rock?</MainButtonRock>
+        
       </Section>
     </PageContainer>
   );

@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.5.2",
+    "@fortawesome/free-solid-svg-icons": "^6.5.2",
+    "@fortawesome/react-fontawesome": "^0.2.2",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -10,8 +13,10 @@
     "body-parser": "^1.20.2",
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.3",
+    "clsx": "^2.1.1",
     "firebase": "^10.12.2",
     "firebase-admin": "^12.1.1",
+    "framer-motion": "^11.2.11",
     "fs": "^0.0.1-security",
     "multer": "^1.4.5-lts.1",
     "openai": "^4.47.1",
@@ -26,8 +31,9 @@
     "react-router-dom": "^6.23.0",
     "react-scripts": "5.0.1",
     "sharp": "^0.33.4",
-    "homepage":"https://aryankumar1401.github.io/Data-tool",
     "styled-components": "^6.1.9",
+    "tailwind-merge": "^2.3.0",
+    "tailwindcss": "^3.4.4",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
