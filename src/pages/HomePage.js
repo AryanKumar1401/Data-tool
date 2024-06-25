@@ -7,6 +7,7 @@ import ShimmerButton from '../components/magicui/shiny-button.tsx';
 import ShinyButton from '../components/magicui/shiny-button.tsx';
 import AnimatedGridPattern, { GridPattern } from '../components/magicui/background.tsx';
 import { cn } from '../lib/utils.ts';
+import { VelocityScroll } from '../components/magicui/scroll-based-velocity.tsx';
 
 
 // Styled button component
@@ -117,6 +118,10 @@ const HomePage = () => {
       />
        
         <WordPullUp className='relative text-center text-white' words='Data Tool'></WordPullUp>
+        <VelocityScroll text='Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt '
+        default_velocity={5}
+        
+      />
 
     </div>
   );
