@@ -7,8 +7,6 @@ import ShimmerButton from '../components/magicui/shiny-button.tsx';
 import ShinyButton from '../components/magicui/shiny-button.tsx';
 import AnimatedGridPattern, { GridPattern } from '../components/magicui/background.tsx';
 import { cn } from '../lib/utils.ts';
-import BoxReveal from '../components/magicui/box-reveal.tsx';
-
 
 
 // Styled button component
@@ -25,6 +23,17 @@ const Content = styled.div`
    height: 2500px; 
 `;
  
+const Button = styled.div` 
+   position: fixed;  
+   width: 100%; 
+   left: 50%; 
+   height: 20px; 
+   font-size: 3rem; 
+   z-index: 1; 
+   cursor: pointer; 
+   color: green; 
+
+`
 
 
 const MainButtonRock = styled.button`
@@ -106,42 +115,10 @@ const HomePage = () => {
     <div className="h-screen w-screen items-center justify-center overflow-hidden bg-background md:shadow-xl">
       <GridPattern numSquares={200} className='w-screen h-screen' maxOpacity={0.75}
       />
-      {/* <h2 className='relative text-center text-white'>Your Personal</h2>
        
-        <WordPullUp className='relative text-center text-white' words='Data Tool'></WordPullUp> */}
-            <BoxReveal boxColor={"white"} duration={0.5}>
-        <p className="text-[3.5rem] font-semibold text-white">
-          Data Tool<span className="text-white">.</span>
-        </p>
-      </BoxReveal>
- 
-      <BoxReveal boxColor={"white"} duration={0.5}>
-        {/* <h2 className="mt-[.5rem] text-[1rem]">
-          UI library for{" "}
-          <span className="text-white">Design Engineers</span>
-        </h2> */}
-      </BoxReveal>
- 
-      <BoxReveal boxColor={"white"} duration={0.5}>
-        <div className="mt-[1.5rem]">
-          <p className='text-white'>
-            -&gt; DataTool takes your dataset and cleanses and analyzes it to return stunning visualizations. <br />
-            -&gt; We do the brunt work, so you can get cracking on the real stuff. <br />
-          </p>
-        </div>
-      </BoxReveal>
- 
-      <BoxReveal boxColor={"white"} duration={0.5}>
-      <button
-  class="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-gray-100 text-black shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none"
-  type="button"
-  onClick={navigateToExplore}
->
-  Explore
-</button>      </BoxReveal>
+        <WordPullUp className='relative text-center text-white' words='Data Tool'></WordPullUp>
 
     </div>
-    
   );
 };
 
