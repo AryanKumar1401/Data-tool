@@ -5,40 +5,8 @@ import CarouselPage from '../components/Carousel.js';
 import WordPullUp from '../components/magicui/WordPullup.tsx';
 import ShimmerButton from '../components/magicui/shiny-button.tsx';
 import ShinyButton from '../components/magicui/shiny-button.tsx';
-
-//Functions
-
-const ScrollButton = () => {
- 
-  const [visible, setVisible] = useState(true)
-
-  const toggleVisible = () => {
-      const scrolled = document.documentElement.scrollTop;
-      if (scrolled > 0) {
-          setVisible(false)
-      }
-      else if (scrolled <= 0) {
-          setVisible(true)
-      }
-  };
-
-  const scrollToBottom = () => {
-      window.scrollTo({
-          top: document.documentElement.scrollHeight,
-          behavior: 'auto'
-          /* you can also use 'auto' behaviour 
-             in place of 'smooth' */
-      });
-  };
-
-  window.addEventListener('scroll', toggleVisible);
-
-  return (
-      <Button onClick = {scrollToBottom}>
-    
-      </Button>
-  );
-}
+import AnimatedGridPattern, { GridPattern } from '../components/magicui/background.tsx';
+import { cn } from '../lib/utils.ts';
 
 
 // Styled button component
@@ -144,34 +112,13 @@ const HomePage = () => {
   };
 
   return (
-    <PageContainer>
-      <SubHeader>
-       <WordPullUp words='Your Personal'></WordPullUp>
-        <CarouselPage />
-      </SubHeader>
+    <div className="h-screen w-screen items-center justify-center overflow-hidden bg-background md:shadow-xl">
+      <GridPattern numSquares={200} className='w-screen h-screen' maxOpacity={0.75}
+      />
+       
+        <WordPullUp className='relative text-center text-white' words='Data Tool'></WordPullUp>
 
-      <Fragment>
-            <Header>GeeksForGeeks Scroll To Bottom</Header>
-            <ScrollButton />
-            <Content />
-            <Header>Thanks for visiting</Header>
-        </Fragment>
-
-
-
-
-
-      <Section>
-        <h2>What we do</h2>
-        <p>DataTool takes your dataset and cleanses and analyzes it to return stunning visualizations.</p>
-        <p>
-          <strong>We do the brunt work, so you can get cracking on the real stuff.</strong>
-        </p>
-      
-        <MainButtonRock onClick={navigateToExplore}>Ready to Rock?</MainButtonRock>
-        
-      </Section>
-    </PageContainer>
+    </div>
   );
 };
 
