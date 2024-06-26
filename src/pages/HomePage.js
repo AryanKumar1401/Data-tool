@@ -8,6 +8,69 @@ import ShinyButton from '../components/magicui/shiny-button.tsx';
 import AnimatedGridPattern, { GridPattern } from '../components/magicui/background.tsx';
 import { cn } from '../lib/utils.ts';
 import { VelocityScroll } from '../components/magicui/scroll-based-velocity.tsx';
+import GradualSpacing from '../components/magicui/gradual-spacing.tsx';
+import AnimatedGradientText from '../components/magicui/animated-gradient-text.tsx';
+import Calendar from 'react-calendar';
+import { BentoCard, BentoGrid } from '../components/magicui/bento-grid.tsx';
+import {
+  BellIcon,
+  CalendarIcon,
+  FileTextIcon,
+  GlobeIcon,
+  InputIcon,
+} from "@radix-ui/react-icons";
+
+
+//FUNCTION FOR BENTOGRID
+
+const features = [
+  {
+    Icon: FileTextIcon,
+    name: "Save your files",
+    description: "We automatically save your files as you type.",
+    href: "/",
+    cta: "Learn more",
+    background: <img className="absolute -right-20 -top-20 opacity-60" />,
+    className: "lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3",
+  },
+  {
+    Icon: InputIcon,
+    name: "Full text search",
+    description: "Search through all your files in one place.",
+    href: "/",
+    cta: "Learn more",
+    background: <img className="absolute -right-20 -top-20 opacity-60" />,
+    className: "lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-3",
+  },
+  {
+    Icon: GlobeIcon,
+    name: "Multilingual",
+    description: "Supports 100+ languages and counting.",
+    href: "/",
+    cta: "Learn more",
+    background: <img className="absolute -right-20 -top-20 opacity-60" />,
+    className: "lg:col-start-1 lg:col-end-2 lg:row-start-3 lg:row-end-4",
+  },
+  {
+    Icon: CalendarIcon,
+    name: "Calendar",
+    description: "Use the calendar to filter your files by date.",
+    href: "/",
+    cta: "Learn more",
+    background: <img className="absolute -right-20 -top-20 opacity-60" />,
+    className: "lg:col-start-3 lg:col-end-3 lg:row-start-1 lg:row-end-2",
+  },
+  {
+    Icon: BellIcon,
+    name: "Notifications",
+    description:
+      "Get notified when someone shares a file or mentions you in a comment.",
+    href: "/",
+    cta: "Learn more",
+    background: <img className="absolute -right-20 -top-20 opacity-60" />,
+    className: "lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4",
+  },
+];
 
 
 // Styled button component
@@ -117,11 +180,38 @@ const HomePage = () => {
       <GridPattern numSquares={200} className='w-screen h-screen' maxOpacity={0.75}
       />
        
-        <WordPullUp className='relative text-center text-white' words='Data Tool'></WordPullUp>
-        <VelocityScroll text='Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt '
-        default_velocity={5}
-        
-      />
+       <GradualSpacing
+      className="font-display text-center text-4xl font-bold tracking-[-0.1em]  text-white dark:text-white md:text-7xl md:leading-[5rem]"
+      text="Elegant. Simple. Quick."
+    />
+
+<div className="z-10 flex min-h-[16rem] items-center justify-center">
+      <AnimatedGradientText>
+       
+        <span
+          className={cn(
+            `inline animate-gradient bg-gradient-to-r from-[#ffaa40] via-[#9c40ff] to-[#ffaa40] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent`,
+          )}
+        >
+          Welcome to DataTool
+        </span>
+      
+      </AnimatedGradientText>
+
+
+
+    </div>
+
+    <div className="z-10 flex min-h-[16rem] items-center justify-center">
+
+    <BentoGrid className="lg:grid-rows-3">
+      {features.map((feature) => (
+        <BentoCard key={feature.name} {...feature} />
+      ))}
+    </BentoGrid>
+
+    </div>
+    
 
     </div>
   );
