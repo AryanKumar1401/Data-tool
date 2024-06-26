@@ -11,6 +11,7 @@ import { auth } from './firebase';
 import { Helmet } from 'react-helmet';
 import VizualizeOrClean from './pages/VizualizeOrClean';
 import UploadPageCleanse from './pages/UploadPageCleanse';
+import UploadPageAfterLoadingVisualization from './pages/UploadPageAfterLoadingVisualization';
 
 function App() {
   const [showAuth, setShowAuth] = useState(false);
@@ -75,6 +76,7 @@ function App() {
             <Route path="/pricing" element={<PricingPage />} />
             <Route path = "/viz" element = {<VizualizeOrClean />} /> 
             <Route path = "/cleanse" element = {<UploadPageCleanse />} /> 
+            <Route path = "/chat" element ={<UploadPageAfterLoadingVisualization />} />
             
           </Routes>
           {showAuth && (
