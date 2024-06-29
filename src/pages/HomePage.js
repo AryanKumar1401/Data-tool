@@ -12,6 +12,8 @@ import GradualSpacing from '../components/magicui/gradual-spacing.tsx';
 import AnimatedGradientText from '../components/magicui/animated-gradient-text.tsx';
 import Calendar from 'react-calendar';
 import { BentoCard, BentoGrid } from '../components/magicui/bento-grid.tsx';
+import Meteors from '../components/magicui/meteors.tsx';
+import WordFadeIn from '../components/magicui/word-fade-in.tsx';
 import {
   BellIcon,
   CalendarIcon,
@@ -176,7 +178,15 @@ const HomePage = () => {
   };
 
   return (
+    
+
+
+
+
     <div className="h-screen w-screen items-center justify-center overflow-hidden bg-background md:shadow-xl">
+
+
+
       <GridPattern numSquares={200} className='w-screen h-screen' maxOpacity={0.75}
       />
        
@@ -202,15 +212,16 @@ const HomePage = () => {
 
     </div>
 
-    <div className="z-10 flex min-h-[16rem] items-center justify-center">
+    <WordFadeIn words="DataTool automatically cleanses and visualizes the data that you provide it." />;
 
-    <BentoGrid className="lg:grid-rows-3">
-      {features.map((feature) => (
-        <BentoCard key={feature.name} {...feature} />
-      ))}
-    </BentoGrid>
 
-    </div>
+    <ShinyButton text="Unlock Your Data Power" />;
+
+
+
+
+
+   
     
 
     </div>
