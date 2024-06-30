@@ -36,12 +36,12 @@ const HomePage = () => {
   };
 
   return (
-    <div className="h-screen w-screen items-center justify-center overflow-hidden bg-background md:shadow-xl mx-4">
+    <div className="h-screen w-screen items-center justify-center bg-background md:shadow-xl">
       <GridPattern numSquares={200} className='w-screen h-screen' maxOpacity={0.75}
       />
-      <div className='mb-8'>
+      <div className='mb-8 mx-12'>
             <BoxReveal boxColor={"white"} duration={0.5}>
-        <h1 class="text-4xl font-bold tracking-tight text-white sm:text-6xl">
+        <h1 class="text-4xl font-bold tracking-tight text-white sm:text-6xl text-center">
           Data Tool: Transform your data with ease<span className="text-white">.</span>
         </h1>
       </BoxReveal>
@@ -49,7 +49,7 @@ const HomePage = () => {
       </BoxReveal>
       <BoxReveal boxColor={"white"} duration={0.5}>
         <div className="mt-[1.5rem]">
-          <p className='mt-6 text-lg leading-8 text-white'>
+          <p className='mt-6 text-lg leading-8 text-white text-center'>
            Transform raw data into insightful visualizations that drive smarter decisions.
           </p>
         </div>
@@ -66,10 +66,7 @@ const HomePage = () => {
       </BoxReveal>
       </div>
 
-
-
-
- <div class="bg-gray-100 text-black flex items-center justify-center min-h-80 font-mono relative">
+ <div class="bg-gray-100 text-black text-mono flex items-center justify-center min-h-80 font-mono relative">
   <div class="text-center min">
     <h1 class="text-4xl font-bold mb-12">Effortless Data Mastery.</h1>
     <div class="flex justify-around space-x-8">
@@ -87,6 +84,42 @@ const HomePage = () => {
       </div>
     </div>
   </div>
+</div>
+
+<div class="bg-black text-white flex items-center justify-center p-14 relative font-mono">
+    <div class="text-center">
+        <h1 class="text-4xl font-bold mb-8">Why Choose Data Tool?</h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+                <div class="flex items-center justify-center mb-4">
+                    <div class="bg-white text-black rounded-full h-12 w-12 flex items-center justify-center text-2xl font-bold">1</div>
+                </div>
+                <h2 class="text-xl font-semibold">Efficiency</h2>
+                <p>We handle the tedious data processing tasks, saving you valuable time and effort.</p>
+            </div>
+            <div>
+                <div class="flex items-center justify-center mb-4">
+                    <div class="bg-white text-black rounded-full h-12 w-12 flex items-center justify-center text-2xl font-bold">2</div>
+                </div>
+                <h2 class="text-xl font-semibold">Accuracy</h2>
+                <p>Our state-of-the-art algorithms ensure your data is clean and reliable.</p>
+            </div>
+            <div>
+                <div class="flex items-center justify-center mb-4">
+                    <div class="bg-white text-black rounded-full h-12 w-12 flex items-center justify-center text-2xl font-bold">3</div>
+                </div>
+                <h2 class="text-xl font-semibold">Insightful</h2>
+                <p>Access powerful analytics and visualizations that drive smarter decision-making.</p>
+            </div>
+            <div>
+                <div class="flex items-center justify-center mb-4">
+                    <div class="bg-white text-black rounded-full h-12 w-12 flex items-center justify-center text-2xl font-bold">4</div>
+                </div>
+                <h2 class="text-xl font-semibold">User-Friendly</h2>
+                <p>Our intuitive interface makes data processing and visualization accessible to everyone.</p>
+            </div>
+        </div>
+    </div>
 </div>
 
     </div>
