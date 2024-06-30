@@ -15,6 +15,8 @@ import Calendar, { CenturyView } from 'react-calendar';
 import { BentoCard, BentoGrid } from '../components/magicui/bento-grid.tsx';
 import Meteors from '../components/magicui/meteors.tsx';
 import WordFadeIn from '../components/magicui/word-fade-in.tsx';
+import BoxReveal from '../components/magicui/box-reveal.tsx';
+
 import {
   BellIcon,
   CalendarIcon,
@@ -24,200 +26,71 @@ import {
 } from "@radix-ui/react-icons";
 
 
-//FUNCTION FOR BENTOGRID
-
-const features = [
-  {
-    Icon: FileTextIcon,
-    name: "Save your files",
-    description: "We automatically save your files as you type.",
-    href: "/",
-    cta: "Learn more",
-    background: <img className="absolute -right-20 -top-20 opacity-60" />,
-    className: "lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3",
-  },
-  {
-    Icon: InputIcon,
-    name: "Full text search",
-    description: "Search through all your files in one place.",
-    href: "/",
-    cta: "Learn more",
-    background: <img className="absolute -right-20 -top-20 opacity-60" />,
-    className: "lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-3",
-  },
-  {
-    Icon: GlobeIcon,
-    name: "Multilingual",
-    description: "Supports 100+ languages and counting.",
-    href: "/",
-    cta: "Learn more",
-    background: <img className="absolute -right-20 -top-20 opacity-60" />,
-    className: "lg:col-start-1 lg:col-end-2 lg:row-start-3 lg:row-end-4",
-  },
-  {
-    Icon: CalendarIcon,
-    name: "Calendar",
-    description: "Use the calendar to filter your files by date.",
-    href: "/",
-    cta: "Learn more",
-    background: <img className="absolute -right-20 -top-20 opacity-60" />,
-    className: "lg:col-start-3 lg:col-end-3 lg:row-start-1 lg:row-end-2",
-  },
-  {
-    Icon: BellIcon,
-    name: "Notifications",
-    description:
-      "Get notified when someone shares a file or mentions you in a comment.",
-    href: "/",
-    cta: "Learn more",
-    background: <img className="absolute -right-20 -top-20 opacity-60" />,
-    className: "lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4",
-  },
-];
-
-
-// Styled button component
-
-
-const Header = styled.h1` 
-   text-align: center; 
-   left: 50%;
-   color: green; 
-`;
- 
-const Content = styled.div` 
-   overflowY: scroll; 
-   height: 2500px; 
-`;
- 
-
-
-
-
-const MainButtonRock = styled.button`
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  background-color: #121619;
-  height: 50px;
-  width: 180px;
-  font-size: 20px;
-  margin-top: 20px;
-
-  /* Hover effect */
-  &:hover {
-    background-color: #0a1013;
-  }
-`;
-
-// Styled components for the page layout
-const PageContainer = styled.div`
-  background-color: #000;
-  color: #fff;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 20px;
-`;
-
-const SubHeader = styled.div`
-  
-  justify-content: center;
-  margin: 20px 0;
-  font-size: 2em;
-  flex-wrap: wrap;
-
-  & > div {
-    margin: 0 20px;
-  }
-`;
-
-
-const YourPersonal = styled.div `
-  font-size: 1.5em;
-  font-weight: bold;
-`
-
-const Section = styled.section`
-  margin: 50px 0;
-
-  h2 {
-    font-size: 2.5em;
-    margin-bottom: 20px;
-  }
-
-  p {
-    font-size: 1.5em;
-    max-width: 800px;
-    margin: 0 auto;
-  }
-`;
-
-const HorizontalContainer = styled.div `
-  display: flex;
-`
 
 const HomePage = () => {
   const navigate = useNavigate();
 
   // Function to handle button click and navigate to another route
   const navigateToExplore = () => {
-    navigate('/viz');
+    navigate('/upload');
   };
 
   return (
-    
-
-
-
-
-    <div className="h-screen w-screen items-center justify-center overflow-hidden bg-background md:shadow-xl">
-
-
-
+    <div className="h-screen w-screen items-center justify-center overflow-hidden bg-background md:shadow-xl mx-4">
       <GridPattern numSquares={200} className='w-screen h-screen' maxOpacity={0.75}
       />
-       
-      
-<div className="z-10 flex min-h-[16rem] items-center justify-center">
-      <AnimatedGradientText>
-       
-        <span
-          className={cn(
-            `inline animate-gradient bg-gradient-to-r from-[#ffaa40] via-[#9c40ff] to-[#ffaa40] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent text-lg`,
-          )}
-        >
-          Welcome to DataTool
-        </span>
-      
-      </AnimatedGradientText>
+      <div className='mb-8'>
+            <BoxReveal boxColor={"white"} duration={0.5}>
+        <h1 class="text-4xl font-bold tracking-tight text-white sm:text-6xl">
+          Data Tool: Transform your data with ease<span className="text-white">.</span>
+        </h1>
+      </BoxReveal>
+      <BoxReveal boxColor={"white"} duration={0.5}>
+      </BoxReveal>
+      <BoxReveal boxColor={"white"} duration={0.5}>
+        <div className="mt-[1.5rem]">
+          <p className='mt-6 text-lg leading-8 text-white'>
+           Transform raw data into insightful visualizations that drive smarter decisions.
+          </p>
+        </div>
+      </BoxReveal>
+ 
+      <BoxReveal boxColor={"white"} duration={0.5}>
+      <button
+  class="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-gray-100 text-black shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none"
+  type="button"
+  onClick={navigateToExplore}
+      >
+  Explore
+      </button>     
+      </BoxReveal>
+      </div>
 
 
 
+
+ <div class="bg-gray-100 text-black flex items-center justify-center min-h-80 font-mono relative">
+  <div class="text-center min">
+    <h1 class="text-4xl font-bold mb-12">Effortless Data Mastery.</h1>
+    <div class="flex justify-around space-x-8">
+      <div class="flex flex-col items-center">
+        <h2 class="text-2xl font-semibold mb-4">Simplify Data</h2>
+        <p class="max-w-xs">Our tools take the complexity out of data processing, so you can focus on what matters most.</p>
+      </div>
+      <div class="flex flex-col items-center">
+        <h2 class="text-2xl font-semibold mb-4">Unlock Insights</h2>
+        <p class="max-w-xs">Discover hidden trends and patterns in your data with our robust analysis features.</p>
+      </div>
+      <div class="flex flex-col items-center">
+        <h2 class="text-2xl font-semibold mb-4">Visually Stunning</h2>
+        <p class="max-w-xs">Transform data into beautiful, easy-to-understand visualizations.</p>
+      </div>
     </div>
-
-    <WordFadeIn words="DataTool automatically cleanses and visualizes the data that you provide it." />;
-
-<div style={{textAlign: 'center', justifyContent: 'center'}}>
-<Button variant="outline-light" onClick={navigateToExplore}>Explore</Button>
+  </div>
 </div>
 
-    
-
-
-
-
-
-
-
-   
-    
-
     </div>
+    
   );
 };
 
