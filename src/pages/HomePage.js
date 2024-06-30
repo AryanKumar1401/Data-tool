@@ -6,11 +6,12 @@ import WordPullUp from '../components/magicui/WordPullup.tsx';
 import ShimmerButton from '../components/magicui/shiny-button.tsx';
 import ShinyButton from '../components/magicui/shiny-button.tsx';
 import AnimatedGridPattern, { GridPattern } from '../components/magicui/background.tsx';
+import Button from 'react-bootstrap/Button';
 import { cn } from '../lib/utils.ts';
 import { VelocityScroll } from '../components/magicui/scroll-based-velocity.tsx';
 import GradualSpacing from '../components/magicui/gradual-spacing.tsx';
 import AnimatedGradientText from '../components/magicui/animated-gradient-text.tsx';
-import Calendar from 'react-calendar';
+import Calendar, { CenturyView } from 'react-calendar';
 import { BentoCard, BentoGrid } from '../components/magicui/bento-grid.tsx';
 import Meteors from '../components/magicui/meteors.tsx';
 import WordFadeIn from '../components/magicui/word-fade-in.tsx';
@@ -89,17 +90,8 @@ const Content = styled.div`
    height: 2500px; 
 `;
  
-const Button = styled.div` 
-   position: fixed;  
-   width: 100%; 
-   left: 50%; 
-   height: 20px; 
-   font-size: 3rem; 
-   z-index: 1; 
-   cursor: pointer; 
-   color: green; 
 
-`
+
 
 
 const MainButtonRock = styled.button`
@@ -174,7 +166,7 @@ const HomePage = () => {
 
   // Function to handle button click and navigate to another route
   const navigateToExplore = () => {
-    navigate('/upload');
+    navigate('/viz');
   };
 
   return (
@@ -190,17 +182,13 @@ const HomePage = () => {
       <GridPattern numSquares={200} className='w-screen h-screen' maxOpacity={0.75}
       />
        
-       <GradualSpacing
-      className="font-display text-center text-4xl font-bold tracking-[-0.1em]  text-white dark:text-white md:text-7xl md:leading-[5rem]"
-      text="Elegant. Simple. Quick."
-    />
-
+      
 <div className="z-10 flex min-h-[16rem] items-center justify-center">
       <AnimatedGradientText>
        
         <span
           className={cn(
-            `inline animate-gradient bg-gradient-to-r from-[#ffaa40] via-[#9c40ff] to-[#ffaa40] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent`,
+            `inline animate-gradient bg-gradient-to-r from-[#ffaa40] via-[#9c40ff] to-[#ffaa40] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent text-lg`,
           )}
         >
           Welcome to DataTool
@@ -214,8 +202,13 @@ const HomePage = () => {
 
     <WordFadeIn words="DataTool automatically cleanses and visualizes the data that you provide it." />;
 
+<div style={{textAlign: 'center', justifyContent: 'center'}}>
+<Button variant="outline-light" onClick={navigateToExplore}>Explore</Button>
+</div>
 
-    <ShinyButton text="Unlock Your Data Power" />;
+    
+
+
 
 
 
