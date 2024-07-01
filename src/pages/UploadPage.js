@@ -1,16 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import FileUpload from '../components/FileUpload';
 import ChatBox from '../components/ChatBox';
-import Papa from 'papaparse';
 import axios from 'axios';
 import UploadPageAfterUploading from './UploadPageAfterUploading';
-import AboutPage from './AboutPage';
-
-import UploadPageAfterLoadingVisualization from './UploadPageAfterLoadingVisualization';
-
-import AssistantAPIKeyFunctions from '../components/AssistantAPIKeyFunctions';
-
-import { Navigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 const PageContainer = styled.div`
@@ -134,14 +126,6 @@ const UploadPage = () => {
 
 
   const [msgStatus, setMsgStatus] = useState(null);
-
-  // useEffect(() => {
-  //   setMsgStatus(returnMsg());
-  // }, [returnMsg]);
-
-//LOAD VIZUALIZATION SECTION
- 
-
   let flag = 0;
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -203,18 +187,17 @@ const UploadPage = () => {
       return <UploadPageAfterUploading />;
     } else if (fileUploadSuccess && threadFinishNotifier) {
       return (<PageContainer>
+        <div className="flex flex-col items-center w-1/3 ml-5 bg-white p-5 border border-gray-300 h-4/5 overflow-y-auto">
+        {
+          imageSrcExport && <img src={imageSrcExport} alt="Uploaded Visualization" />
+        }
+        </div>
         <ChatBox
           messages={messages}  
           input={input}
           setInput={setInput}
           handleChatSubmit={handleChatSubmit}
         />
-        <div className="flex flex-col items-center w-1/3 ml-5 bg-white p-5 border border-gray-300 h-4/5 overflow-y-auto">
-        {
-          imageSrcExport && <img src={imageSrcExport} alt="Uploaded Visualization" />
-        }
-         
-        </div>
       </PageContainer>);
     } else {
       return (

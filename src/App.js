@@ -87,9 +87,6 @@ function App() {
             </div>
           )}
         </main>
-        <footer className="bg-gray-900 text-white text-center py-4 mt-4">
-          © 2024 DataTool. All rights reserved.
-        </footer>
       </div>
     </Router>
   );
