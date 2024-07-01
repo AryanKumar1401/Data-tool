@@ -203,7 +203,7 @@ const HomePage = () => {
     <WordFadeIn words="DataTool automatically cleanses and visualizes the data that you provide it." />;
 
 <div style={{textAlign: 'center', justifyContent: 'center'}}>
-<Button variant="outline-light" onClick={navigateToExplore}>Explore</Button>
+<Button variant="outline-light" onClick={navigateToExplore}>Explore</Button>{' '}
 </div>
 
     
